@@ -47,7 +47,11 @@ REQUIRED_IGNORE_RULES = [
     # Depth-independent: the job-scraper skill resolves `job_scraper/` relative
     # to its own directory, so the state file lands under .claude/skills/... and
     # a repo-rooted rule silently fails to match it.
-    "**/job_scraper/seen_jobs.json",
+    #
+    # FORK DIVERGENCE (2026-08-11): `**/job_scraper/seen_jobs.json` is deliberately
+    # absent from this list. A scheduled cloud agent clones this fork fresh on every
+    # run, so dedup state only survives if it is committed. The privacy cost was
+    # raised and accepted by the repo owner. Upstream forks should keep the rule.
     "**/job_scraper/notion_sync.json",
     "**/job_scraper/*.md",
     "*_BehavioralReport.pdf",

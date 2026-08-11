@@ -1,0 +1,228 @@
+%-------------------------
+% Resume in Latex
+% Author : Jake Gutierrez
+% Based off of: https://github.com/sb2nov/resume
+% License : MIT
+%------------------------
+%
+% Registered with the AI Job Search framework via /add-template.
+% One-page ATS-oriented resume. Compile with:
+%   pdflatex -interaction=nonstopmode <file>.tex
+%
+% Personal data is tokenised as [PLACEHOLDER] so this skeleton stays
+% profile-agnostic. /apply fills the tokens from 01-candidate-profile.md.
+
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\input{glyphtounicode}
+
+
+%----------FONT OPTIONS----------
+% sans-serif
+% \usepackage[sfdefault]{FiraSans}
+% \usepackage[sfdefault]{roboto}
+% \usepackage[sfdefault]{noto-sans}
+% \usepackage[default]{sourcesanspro}
+
+% serif
+% \usepackage{CormorantGaramond}
+% \usepackage{charter}
+
+
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.0in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+% Ensure that generate pdf is machine readable/ATS parsable
+\pdfgentounicode=1
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubSubheading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & #2 \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+
+%----------HEADING----------
+\begin{center}
+    \textbf{\Huge \scshape [YOUR_NAME]} \\ \vspace{1pt}
+    \small [YOUR_CITY], [YOUR_COUNTRY] $|$ [YOUR_PHONE] $|$
+    \href{mailto:[YOUR_EMAIL]}{\underline{[YOUR_EMAIL]}} $|$
+    \href{[YOUR_LINKEDIN_URL]}{\underline{LinkedIn}} $|$
+    \href{[YOUR_WEBSITE_URL]}{\underline{Personal Site}} $|$
+    \href{[YOUR_GITHUB_URL]}{\underline{GitHub}}
+\end{center}
+
+%-----------PROFESSIONAL SUMMARY-----------
+\section{Professional Summary}
+\small{[2-3 sentence summary tailored to the target role. Lead with what the
+employer gains. Name the posting's core technology where it truthfully applies.]}
+
+%-----------EXPERIENCE-----------
+\section{Professional Experience}
+  \resumeSubHeadingListStart
+
+    % NOTE: date arguments use a SINGLE ASCII hyphen, never `--`.
+    % LaTeX ligatures `--` into an en-dash (U+2013), which ATS parsers such as
+    % Workday fail to split into a start/end range - silently, with no visible
+    % defect in the PDF. See "Date fields must be ASCII ranges" in
+    % 05-cv-templates.md. Keep `--` only where it is typographic prose.
+    \resumeSubheading
+      {[JOB_TITLE]}{[Month YYYY] - [Month YYYY]}
+      {[COMPANY]}{[CITY, COUNTRY]}
+      \resumeItemListStart
+        \resumeItem{[Achievement with a number, tool, and outcome]}
+        \resumeItem{[Achievement 2]}
+        \resumeItem{[Achievement 3]}
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {[JOB_TITLE]}{[Month YYYY] - [Month YYYY]}
+      {[COMPANY]}{[CITY, COUNTRY]}
+      \resumeItemListStart
+        \resumeItem{[Achievement 1]}
+        \resumeItem{[Achievement 2]}
+        \resumeItem{[Achievement 3]}
+      \resumeItemListEnd
+
+  \resumeSubHeadingListEnd
+
+  %-------------------------------------
+
+\section{Leadership Experience}
+  \resumeSubHeadingListStart
+
+    \resumeSubheading
+      {[ROLE]}{[Month YYYY] - Present}
+      {[ORGANIZATION]}{[CITY, COUNTRY]}
+      \resumeItemListStart
+        \resumeItem{[Scope: team size, what you own, who depends on you]}
+        \resumeItem{[Technical substance of the leadership work]}
+        \resumeItem{[Outcome or deliverable]}
+      \resumeItemListEnd
+
+  \resumeSubHeadingListEnd
+
+%-----------EDUCATION-----------
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {[INSTITUTION]}{Expected [Month YYYY]}
+      {[DEGREE] in [FIELD] $|$ [DISTINCTION] $|$ GPA: [GPA]}{}
+       \begin{itemize}[leftmargin=0.15in, label={}]
+            \small{\item{
+            \textbf{Relevant Coursework}{: [3-5 courses chosen for THIS posting]}
+            }}
+        \end{itemize}
+  \resumeSubHeadingListEnd
+
+%-----------PROJECTS-----------
+\section{Projects}
+    \resumeSubHeadingListStart
+      \resumeProjectHeading
+          {\textbf{[PROJECT_NAME]} $|$ \emph{[TECH_STACK]}}{[Month YYYY] - [Month YYYY]}
+          \resumeItemListStart
+            \resumeItem{[What it does and how it works]}
+            \resumeItem{[Hardest technical part]}
+          \resumeItemListEnd
+      \resumeProjectHeading
+          {\textbf{[PROJECT_NAME]} $|$ \emph{[TECH_STACK]}}{[Month YYYY] - [Month YYYY]}
+          \resumeItemListStart
+            \resumeItem{[What it does and how it works]}
+            \resumeItem{[Hardest technical part]}
+          \resumeItemListEnd
+    \resumeSubHeadingListEnd
+
+
+%-----------PROGRAMMING SKILLS-----------
+\section{Skills}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+     \textbf{Languages}{: [PROGRAMMING_LANGUAGES]} \\
+     \textbf{Tools \& Frameworks}{: [TOOLS_AND_FRAMEWORKS]} \\
+     \textbf{Data}{: [DATA_SKILLS]} \\
+     \textbf{Other}{: [OTHER_TOOLS]}
+    }}
+ \end{itemize}
+
+
+%-----------CERTIFICATIONS-----------
+\section{Certifications}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {[ISSUER]}{[Month YYYY]}
+      {[CERTIFICATION_NAME]}{}
+  \resumeSubHeadingListEnd
+
+
+%-------------------------------------------
+\end{document}
