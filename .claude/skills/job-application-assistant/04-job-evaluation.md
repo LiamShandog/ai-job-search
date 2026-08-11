@@ -30,6 +30,59 @@ If the candidate's permit also constrains *hours* or *start date* (a student vis
 
 A role that fails this gate is not scored and not drafted. Everything below applies only to roles that pass it.
 
+### Candidate-specific eligibility facts (Liam Shannon)
+
+**Status:** Canadian citizen. No second citizenship, no other passport, no
+pre-existing right to work anywhere else. Because the search is worldwide, this
+gate will fire often - run it *first*, before spending effort on scoring.
+
+| Market | Reality |
+|---|---|
+| **Canada** | Unrestricted. No gate concerns. |
+| **United States** | Needs employer cooperation. Canadian citizens have no automatic US work right; student interns normally need a **J-1** intern/trainee visa, arranged via the employer or a designated sponsor. TN status does not apply (it requires a completed degree and a listed profession). Large tech employers hire Canadian interns routinely and have this process; smaller companies often do not. **PROCEED but mark unverified** unless the posting names international or Canadian applicants. Ask early in the process rather than after an offer. |
+| **UK / Ireland / EU / elsewhere** | Requires a work permit or an internship-specific scheme (e.g. the UK's Government Authorised Exchange route). Employer must be willing and, in the UK, licensed to sponsor. **PROCEED but mark unverified.** |
+| **Fully remote** | Check where the employer can legally engage a Canada-based contractor or employee. "Remote" frequently means "remote within country X". |
+
+**Hard fails to watch for, which recur in exactly the companies Liam named as targets:**
+
+- **"Must be a US person" / "US citizen or permanent resident"** - standard on US defence, space, and government-adjacent work. This catches **Palantir's US government business**, Anduril, SpaceX (ITAR), Lockheed, and similar. Palantir's commercial and non-US roles, and its UK and Canadian offices, are not necessarily affected - check the specific posting rather than writing the company off.
+- **Any security clearance requirement** at any level, in any country. Clearances are normally gated on citizenship of that country.
+- **ITAR or export-control restrictions** - common across aerospace and defence, which overlaps Liam's aerospace interest. A posting can be an excellent skills fit and still be a categorical no.
+
+### CANDIDATE OVERRIDE (2026-08-09): apply under uncertainty, never drop
+
+**Liam's explicit instruction: "When there is any uncertainty in whether I could
+actually work a specific job, I'd rather apply than ignore it. I want to apply to
+as many jobs as possible."**
+
+This overrides the default posture of this gate and of the bulleted hard-fail list
+above. Uncertainty no longer *excludes* a posting - it only labels it. Apply this
+three-way split and **surface every posting in all three buckets**. Nothing is
+dropped silently, and nothing is withheld from his view.
+
+| Evidence | Verdict |
+|---|---|
+| **The employer's own posting text** states a barrier he cannot meet, quoted verbatim - e.g. IBM Hursley's *"you must have permanent residency to work in the UK"*, or Palantir Seattle's *"Active US Security clearance, or eligibility and willingness to obtain a US Security clearance"* | **NOT RECOMMENDED - but still listed, still quoted, still his call.** Clearance and ITAR bars are legal, not preferences, so an application cannot succeed however strong the fit. Rank these last rather than hiding them. |
+| **Second-hand or inferred** - a community tracker's 🇺🇸/🛂 marker, a flag propagated from a *different* req at the same employer, a "this type of company usually requires" assumption, anything not read from the posting itself | **APPLY.** Note the concern in one line, then treat the posting as live. Tracker markers are volunteer-maintained and are frequently stale or simply wrong. |
+| **Silent or ambiguous** on citizenship, residency, or sponsorship | **APPLY.** Do not research silence into a rejection. Employers often state a default they will waive for a candidate they want. |
+
+**Practical consequences:**
+
+- Never exclude a posting because a *different* role at the same employer required citizenship. Palantir is the standing example: its US government work is gated, its UK and commercial roles are not.
+- "Does not offer sponsorship" is **not** a hard fail. It is a reason to apply and ask.
+- Where a posting is a strong skills match and the only doubt is work authorization, that doubt is **an interview question, not a filter**. Apply, and ask early who handles authorization.
+- Keep reporting the concern every time. Applying anyway is Liam's decision to make with the facts in front of him; it is never a reason to stop surfacing them.
+
+**Where the "not recommended" label will legitimately recur** (still listed, still
+his decision): US defence, space, and government-adjacent work - Palantir's US
+government business, Anduril, SpaceX and other ITAR-restricted aerospace,
+Lockheed, RTX, Northrop, and any posting naming a security clearance.
+
+**Report a failure with the quoted wording** rather than silently dropping the
+posting, and never assume silence means permission. For US postings in
+particular, the employer's own university-recruiting or FAQ page is usually more
+informative than the job ad.
+
 ## Language Gate — run before scoring
 
 No dimension or gate anywhere in this framework currently checks a posting's language requirements against what the candidate actually speaks - it is not one of the five Scoring Dimensions below, not a field `/scrape` or `/rank` track, and not something `/apply`'s language detection (Step 1, which already extracts a posting's required language generically) has anywhere to report to. This gate adds that check, structured the same way as the Eligibility Gate above: read the posting, classify against profile data, and treat a hard mismatch as FAIL before scoring.
@@ -60,9 +113,21 @@ How well do the required/preferred skills align with the candidate's capabilitie
 | 40-59 | Partial match, significant upskilling needed |
 | 0-39 | Fundamental mismatch |
 
-**Strong match areas:** [YOUR_PRIMARY_SKILLS]
-**Moderate match areas:** [YOUR_SECONDARY_SKILLS]
-**Weak match areas:** [SKILLS_YOU_LACK]
+**Strong match areas:** Palantir Foundry (ontology modeling, pipelines, transforms, OSDK, AIP - certified), TypeScript/JavaScript, React, Python data pipelines, full-stack application delivery, ROS 2, SLAM, Arduino/C-C++ embedded control, PID and closed-loop control, Docker, Git, Linux
+
+**Moderate match areas:** Gazebo simulation, sensor integration, Raspberry Pi, SolidWorks/Onshape CAD, Altium/LTspice power electronics, SQL-style querying, large-scale data modeling, VHDL and NIOS II assembly (coursework only)
+
+**Weak match areas / genuine gaps - never paper over these:**
+- Machine learning and AI practice (no shipped models; Foundry AIP certificate and strong applied maths only)
+- Cloud infrastructure: AWS, GCP, Azure, Kubernetes, Terraform
+- Production software engineering process at scale: CI/CD beyond Docker builds, TDD, large-team code review culture
+- Direct database ownership: Postgres/MySQL schema design, query tuning outside Foundry
+- Compiled-systems depth: Rust, Go, JVM languages
+- Mobile, game development, graphics, security
+
+A posting whose core requirement sits in the weak list scores below 40 on this
+dimension regardless of how strong the rest of the profile is. Say so plainly
+rather than stretching the framing.
 
 ### 2. Experience Match (0-100)
 Does work history align with what they're looking for?
@@ -74,9 +139,20 @@ Does work history align with what they're looking for?
 | 40-59 | Adjacent experience, would need to make the case |
 | 0-39 | Unrelated experience |
 
-**Strong:** [YOUR_DIRECT_EXPERIENCE_DOMAINS]
-**Moderate:** [YOUR_ADJACENT_EXPERIENCE]
-**Entry-level:** [ROLES_WITH_LIMITED_EXPERIENCE]
+**Calibrate against the right baseline.** Liam is applying for **internships and
+co-op placements as a third-year undergraduate**, not for full-time roles. Score
+experience against what internship postings ask of students, not against a
+mid-level engineer's résumé. Against that baseline he is unusually strong: 1+
+year of paid production software work, two employers, and a 15-person team lead
+role, where most applicants have coursework and personal projects. A posting
+demanding 3+ years of professional experience is a genuine mismatch; an
+internship posting asking for "some programming experience" is an 85+, not a 60.
+
+**Strong:** enterprise data platform work (Palantir Foundry), operational/logistics software for heavy industry (construction, trucking, fleet and equipment management), full-stack internal tooling, customer- and stakeholder-facing engineering, autonomous ground/air robotics in a competition setting, technical team leadership
+
+**Moderate:** general SaaS product engineering, embedded firmware, power electronics, mechanical CAD, data engineering outside Foundry
+
+**Entry-level / no professional experience:** ML and AI engineering, cloud/DevOps/SRE, security, mobile, quantitative finance, hardware manufacturing at scale
 
 ### 3. Behavioral/Culture Fit (0-100)
 Does the role and company culture match the behavioral profile?
@@ -91,10 +167,40 @@ Does the role and company culture match the behavioral profile?
 **Red flags to research:** Department disorganization, work dominated by maintenance over development, poor chemistry with leadership, culture mismatches. Check reviews, media coverage, LinkedIn connections, and network contacts for insider perspective.
 
 ### 4. Location & Logistics (Pass/Fail + Notes)
-- Within commute range: PASS
-- Remote with occasional office: PASS
-- Requires relocation: FAIL (deal-breaker)
-- Frequent international travel: FLAG (discuss with user)
+
+**Location fails only on the two excluded countries.** Liam is open to relocating
+anywhere in the world for the placement and has no commute or family constraints,
+with one stated exception recorded below. Otherwise, do not reject a posting on
+geography.
+
+**Excluded countries (stated 2026-08-09): India and China.** A posting based in
+either — on-site, hybrid, or "remote within" that country — is a **FAIL**. It is
+not scored and not drafted. This is a stated preference, not an uncertainty about
+eligibility, so the CANDIDATE OVERRIDE above does **not** apply to it: the override
+governs citizenship and work-authorization doubt, not where he is willing to live.
+Watch for the indirect signals as well as the obvious ones — an `in.linkedin.com`
+or `cn.linkedin.com` source domain, a "Greater <city> Area" location string, or a
+"remote (India only)" clause. A role that is remote *within* an excluded country
+still fails, because it requires being in that country.
+
+- Anywhere in the world except India and China, on-site or hybrid: PASS
+- Remote, not tied to an excluded country: PASS
+- Requires relocation (outside the excluded countries): PASS (expected and accepted)
+- Based in, or remote-within, India or China: **FAIL**
+
+**What replaces location as the real logistical filter is the term.** Check every
+posting against the availability window in `01-candidate-profile.md`:
+
+| Posting term | Verdict |
+|---|---|
+| 12-16 month internship / co-op / industrial placement, starting mid-2027 | **Ideal.** Lead with the availability match; it is a differentiator. |
+| 6-8 month co-op starting mid-2027 | **PASS.** Good, and can be paired with a second placement to fill the window. |
+| Standard 12-16 week summer 2027 internship | **PASS, with a note.** Covers only a third of the window. Worth applying to prestigious ones, but flag that a second placement will be needed. Ask whether the employer would extend. |
+| Starts before May 2027 or requires term-time availability | **FAIL.** Third year runs to April 2027. |
+| Full-time / new-grad role | **FAIL.** He has a final year to complete after the placement. |
+| Internship for summer 2026 or earlier | **FAIL.** Expired cycle. |
+
+Frequent international travel: PASS, and generally a positive.
 
 ### 5. Career Alignment & Motivation (0-100)
 Does this role advance career goals and contain tasks that energize?
@@ -107,19 +213,46 @@ Does this role advance career goals and contain tasks that energize?
 | 0-39 | Dead end or backwards step |
 
 **Career goals:**
-- [YOUR_CAREER_GOAL_1]
-- [YOUR_CAREER_GOAL_2]
-- [YOUR_CAREER_GOAL_3]
+- Work with the strongest engineers he can reach, and learn from them. Stated as the primary objective, explicitly ahead of compensation: "I really want to just get the absolute best possible job, to learn from the smartest people possible."
+- Build the network and credibility to either found a startup or hold significant responsibility at a frontier-leading company.
+- Be pushed hard. A placement that is comfortable but unchallenging counts as a failure by his own measure.
+- Preserve breadth across software and hardware rather than narrowing to one layer too early.
 
-**Motivation filter:** Evaluate not just whether you *can* do the tasks, but whether the tasks will *energize* you. Consider:
-- Tasks that energize: [YOUR_ENERGIZING_TASKS]
-- Tasks that drain: [YOUR_DRAINING_TASKS]
-- Non-task factors: leadership style, department culture, company values, degree of autonomy
+**This dimension carries unusual weight for this candidate.** With no salary floor
+and no location constraint, career alignment and calibre of team are effectively
+*the* decision criteria. Weight it accordingly when the overall score is close.
 
-**Life situation alignment:** Consider personal constraints:
-- **Security**: [YOUR_FINANCIAL_SITUATION_CONTEXT]
-- **Flexibility**: [YOUR_SCHEDULE_CONSTRAINTS]
-- **Professional development**: [YOUR_GROWTH_PRIORITIES]
+**Motivation filter:**
+- **Tasks that energize:** hard problems with no obvious answer; being trusted with an outcome and contributing heavily; working alongside driven, technically strong people; owning something end to end
+- **Tasks that drain:** mundane and repetitive work; being overlooked or treated as less capable because he is younger; colleagues without drive
+- **Non-task factors:** degree of autonomy granted to interns, technical calibre of the immediate team, whether interns ship to production, directness of feedback
+
+**Company-calibre filter (from Liam's stated targets):** big tech and FAANG,
+Palantir, and reputable companies generally. In practice, prioritize:
+1. Companies where the work is genuinely frontier (AI labs, autonomy, space, defence tech, advanced infrastructure)
+2. Palantir specifically - the Foundry and OSDK experience is a rare, directly transferable match, and Forward Deployed Engineer is the best-fit role in the entire search
+3. Big tech with strong, long-established intern programs that give real ownership
+4. Well-regarded startups where an intern's scope is large by default
+
+**Life situation alignment:**
+- **Security:** no salary baseline set; no financial constraint stated. Do not filter on compensation, but do surface unpaid or below-market offers for his judgment rather than treating them as neutral.
+- **Flexibility:** fully flexible May 2027 through summer 2028. No constraints during the window. Unavailable before May 2027 (third year runs to April 2027).
+- **Professional development:** the placement's learning curve and the seniority of the people he would work with matter more than title or pay. Weight mentorship quality and team calibre heavily.
+
+## Additional gate for this candidate: internship term match
+
+Run the term-match table in dimension 4 as a gate, not a scored note. A posting
+that cannot start after May 2027, or that is a full-time/new-grad role, is a hard
+FAIL regardless of how well it matches on skills - Liam has a final year to
+complete. This is the single most common way a well-matched posting turns out to
+be unusable, so check it early.
+
+## Calibration from Past Applications
+
+No data yet. `documents/applications/` is empty, so nothing here is calibrated
+against real outcomes. Record results with `/outcome` as applications resolve,
+then re-run `/setup` to populate this section. Until then, treat every score in
+this framework as an untested estimate.
 
 ### 6. Salary Benchmark (Optional)
 

@@ -39,11 +39,15 @@ The command is **silently optional**: when the destination is not reachable, the
 Validate the cheap, local precondition before creating anything external. A run with nothing to sync must exit with **zero side effects** - no database created, no state file written.
 
 1. Read `job_scraper/seen_jobs.json` and `job_search_tracker.csv` (either may be missing).
-2. Select `seen_jobs.json` entries with status `ranked` whose `rank_score` meets the threshold from Step 0. `--all` lifts the threshold entirely.
+2. Select `seen_jobs.json` entries with status `ranked` **or `processed`** whose `rank_score` meets the threshold from Step 0. `--all` lifts the threshold entirely. A `processed` entry still carries the `rank_score` `/rank` gave it, so the threshold applies unchanged; an ad-hoc `processed` entry created from a pasted URL has no `rank_score` and always syncs regardless of threshold - the candidate has already invested in it, so it belongs on the board.
 3. Every tracker row joins the sync set (an applied-to job always syncs, ranked or not), matched to `seen_jobs.json` entries case-insensitively on company + role where possible. Tracker rows with no `seen_jobs.json` entry sync too - build their Key as `<company>_<role>` lowercased with underscores.
-4. **Status precedence:** the tracker wins. A job that is `ranked` in `seen_jobs.json` but `interview` in the tracker syncs as `interview`. Jobs only in `seen_jobs.json` keep their stored status.
-5. **If the sync set is empty** (no ranked entries meet the threshold and there are no tracker rows), say "Nothing to sync - run `/scrape` and `/rank` first" (or, when jobs exist but all score below the threshold, say so and suggest `--min-score`/`--all`) and **stop**.
-6. State the counts before touching the destination: how many rows will be created or checked, and the threshold in effect.
+
+   **Join tracker rows on the posting URL first**, falling back to company + role only when no URL matches. Name matching alone is unsafe: a tracker role of "Forward Deployed Software Engineer, Internship - Commercial" contains "Software Engineer Intern" as a substring, so a naive company+title match binds the application to the wrong requisition at the same employer, and the mis-joined row then reports an application that was never made.
+
+4. **A previously synced job whose status has since moved off `ranked` still syncs** - `skipped`, `expired`, `not_recommended`, `applied`. (`processed` is already in the selected set via rule 2 and needs no rescue.) Selecting only `ranked` entries would strand those rows at whatever they said when they were last seen, which is how a board ends up showing `ranked` for a posting the user consciously dropped weeks ago. This is also what makes Step 4's "set Status to `expired` rather than deleting" reachable at all. Such entries update **properties only** and never get a body rewrite. Jobs that have *never* been synced and are not `ranked` stay out - this rule keeps existing rows honest, it does not widen the set.
+5. **Status precedence:** the tracker wins. A job that is `ranked` in `seen_jobs.json` but `interview` in the tracker syncs as `interview`. The same applies to `processed`: once a tracker row exists the application has been submitted, so a `processed` entry with a tracker row syncs as `applied` (or whatever the row says) - `processed` only ever reaches the board for a job with **no** tracker row, which is exactly what makes it readable as "documents ready, not sent". Jobs only in `seen_jobs.json` keep their stored status.
+6. **If the sync set is empty** (no ranked entries meet the threshold and there are no tracker rows), say "Nothing to sync - run `/scrape` and `/rank` first" (or, when jobs exist but all score below the threshold, say so and suggest `--min-score`/`--all`) and **stop**.
+7. State the counts before touching the destination: how many rows will be created or checked, and the threshold in effect.
 
 ---
 
@@ -62,22 +66,25 @@ Validate the cheap, local precondition before creating anything external. A run 
    | Company | rich text | |
    | Score | number | 0-100 from `rank_score` |
    | Verdict | select | Strong Fit / Good Fit / Moderate Fit / Weak Fit / Poor Fit |
-   | Status | select | `ranked` / `drafted` / `applied` / `interview` / `offer` / `hired` / `rejected` / `no_response` / `offer_declined` / `withdrawn` / `expired` — canonical tracker spellings per **Tracker status vocabulary** in `/outcome`; Notion options grow to match as values appear |
-   | Fit | select | high / medium / low (scraper quick-fit) |
+   | Status | select | ranked / processed / applied / interview / offer / hired / rejected / no response / withdrawn / expired / skipped. `processed` means the documents are prepared and verified but not submitted - the actionable bucket on this board |
+   | Route | select | apply / tailor / base / skip - the effort routing from `/rank`. Write the **effective** route: the entry's `route` (the user's override) when set, otherwise `suggested_route`. Leave empty for entries that have neither, and for applied rows, where the routing question is settled. **Keep it populated for `processed` rows** - the route is why the documents look the way they do, and it is still worth seeing next to a job that has not been sent |
+   | Fit | select | high / medium / low (scraper quick-fit). Kept for schema continuity, but **hidden in the default view** - every synced row is ranked or applied, so it already carries a Verdict, and the scrape-time quick-fit is both coarser and systematically more pessimistic. Do not un-hide it |
    | Deadline | date | omit when unknown |
    | First seen | date | |
    | Ranked | date | `rank_date` from `seen_jobs.json`; omit when not ranked |
-   | Applied on | date | tracker `date` column; omit when not in the tracker, and omit when the status is `drafted` |
+   | Applied on | date | tracker `date` column; omit when not in the tracker |
    | Channel | select | tracker `channel` column (e.g. portal / email / referral); options grow as values appear |
-   | CV file | rich text | tracker `cv_file` column - the filename only, never document content |
-   | Cover letter | rich text | tracker `cover_letter_file` column - the filename only, never document content |
+   | CV file | rich text | tracker `cv_file` column, falling back to the `seen_jobs.json` entry's `cv_file` for a `processed` row with no tracker row - the filename only, never document content |
+   | Cover letter | rich text | tracker `cover_letter_file` column, same fallback - the filename only, never document content |
    | URL | url | posting URL |
    | Key | rich text | the job's key in `seen_jobs.json` - dedup anchor, never edited by hand |
 
-   The tracker-sourced properties (Applied on, Channel, CV file, Cover letter) stay empty for jobs that have no tracker row. CV file and Cover letter fill in once `/apply` records the draft; Applied on stays empty until `/outcome` records the submission. Only filenames ever sync; document contents stay local.
+   The tracker-sourced properties (Applied on, Channel) stay empty for jobs that have no tracker row - they fill in once `/outcome` records the application. CV file and Cover letter fill in earlier, as soon as `/apply` or `/tailor` marks the job `processed`. Only filenames ever sync; document contents stay local.
 
-4. **Existing database with missing properties:** if the located database predates a schema addition (a property from the table above does not exist), add the missing properties to the database before upserting. Never remove or retype existing properties.
-5. Write `job_scraper/notion_sync.json` with the database id and URL. This file is personal state and is gitignored - never commit it.
+4. **Existing database with missing properties:** if the located database predates a schema addition (a property from the table above does not exist), add the missing properties to the database before upserting. Never remove or retype existing properties. The same applies to a **select option** that does not yet exist (`processed` or `skipped` on Status, or any Route value): add the option, never retype the property or drop existing options.
+5. **Set the default view's columns** to `Company, Name, Route, Verdict, Status, URL`, in that order, and leave every other property hidden. This is the glanceable set - what the user reads on a phone. Score, Deadline, the tracker fields and `Key` all stay on the row and are still synced; they are simply not shown by default. Note that Notion pins the **title** property as the first rendered column in a table view regardless of the configured order, so `Name` may appear ahead of `Company` in the UI even when the view is configured as above.
+6. **Hide `Fit` in the default view** whenever the property exists and is visible. Every synced row is ranked or applied and therefore already carries a Verdict, which is computed from the fetched posting against the full framework; the scrape-time quick-fit is a snippet-level guess and disagrees with the Verdict far more often than it agrees. Leaving both visible invites the weaker number to be read as a second opinion. Hide, do not delete - `Fit` still means something in `seen_jobs.json` for unranked entries, which never reach this board.
+7. Write `job_scraper/notion_sync.json` with the database id and URL. This file is personal state and is gitignored - never commit it.
 
 ---
 
@@ -87,10 +94,8 @@ For each job in the sync set:
 
 1. Query the database for a page whose `Key` equals the job's key.
 2. **No match** → create the page with all properties from the Step 3 table, then write its body (Step 5).
-3. **Match** → update **properties only**: Status, Score, Verdict, Deadline, Ranked, Applied on, Channel, CV file, Cover letter. Properties are the always-current surface (bodies are write-once), so tracker updates recorded by `/outcome` reach the destination exclusively through them. Do not touch the page body - the user may have added their own notes there, and clobbering them breaks trust in the whole view. (`--rebuild` is the sole exception.)
+3. **Match** → update **properties only**: Status, Route, Score, Verdict, Deadline, Ranked, Applied on, Channel, CV file, Cover letter. Properties are the always-current surface (bodies are write-once), so tracker updates recorded by `/outcome` and route changes made after `/rank` reach the destination exclusively through them. Do not touch the page body - the user may have added their own notes there, and clobbering them breaks trust in the whole view. (`--rebuild` is the sole exception.)
 4. Never delete or archive pages, even for jobs that turned `expired` - set Status to `expired` instead. Rows the user added to the database by hand (no `Key` value) are invisible to this command.
-
-**Normalise the Status value before writing.** The tracker may hold legacy space spellings (`no response`, `offer declined`) from before the canonical forms were locked. Map them to `no_response` / `offer_declined` per the **Tracker status vocabulary** in `/outcome` before setting Status on create or update - never push a space form to Notion, which would auto-create a separate select option per unique string. Pre-existing space-form options in an existing database simply go unused; Notion never auto-removes select options.
 
 Batch politely: if the MCP server rate-limits, back off and continue; report any page that failed rather than retrying indefinitely.
 
@@ -100,7 +105,7 @@ Batch politely: if the MCP server rate-limits, back off and continue; report any
 
 The page body is what makes a row worth clicking. Build it **only from stored data and actually fetched content**:
 
-1. **Fit summary** - a short section from `seen_jobs.json` fields: score, verdict, quick-fit level, first-seen and ranked dates. If the job is in the tracker, add the application timeline (date applied, channel, current status, dated notes from the `notes` column) and name the submitted documents from `cv_file`/`cover_letter_file` (filenames only - the documents themselves never sync). **When the status is `drafted`, write "drafted YYYY-MM-DD, not yet submitted" instead of a date applied, and call the files drafts rather than submitted documents** (page bodies are write-once - Step 4.3).
+1. **Fit summary** - a short section from `seen_jobs.json` fields: score, verdict, quick-fit level, first-seen and ranked dates. If the entry is `processed`, add a line naming `processed_date`, which command prepared it (`processed_by`), and the documents from `cv_file`/`cover_letter_file` - filenames only. If the job is in the tracker, add the application timeline (date applied, channel, current status, dated notes from the `notes` column) and name the submitted documents from `cv_file`/`cover_letter_file` (filenames only - the documents themselves never sync).
 2. **The posting** - WebFetch the job URL and write a readable digest: what the role is, key requirements, practical details (location, deadline, salary if stated). Retry a 403 with browser headers per `.claude/skills/job-application-assistant/09-web-research.md` first. If the fetch still fails or redirects to a listing page, write "Posting no longer available (checked YYYY-MM-DD)" - **never reconstruct a posting from memory**.
 3. **Links** - the posting URL; if `documents/applications/<company>_<role>/` exists locally, name it as the local archive path (plain text - the destination cannot link into the filesystem).
 

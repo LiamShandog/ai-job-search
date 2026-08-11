@@ -17,7 +17,7 @@ allowed-tools: Read, Write, Glob, Grep, WebFetch, WebSearch
 
 ## Invocation
 
-- **`/upskill`** — aggregate mode: analyses all jobs in `job_search_tracker.csv`, merged with ranked postings (`rank_score >= 45`) from `job_scraper/seen_jobs.json`
+- **`/upskill`** — aggregate mode: analyses all jobs in `job_search_tracker.csv`, merged with ranked and prepared postings (`rank_score >= 45`) from `job_scraper/seen_jobs.json`
 - **`/upskill <URL>`** — targeted mode: analyses a single job posting fetched from the URL
 
 ---
@@ -37,7 +37,7 @@ In targeted mode, derive a slug from the job title and company for the report fi
 1. Read `job_search_tracker.csv`. Extract all rows. The columns are:
    `date, company, sector, role, role_type, channel, status, contact_person, fit_rating, notes, cv_file, cover_letter_file, source`
 2. For each row, note the `role`, `company`, and `fit_rating`. The `fit_rating` column is a 0–100 score where 100 = perfect fit. You will use it to weight gaps — a lower fit rating means the role exposed more gaps.
-3. Read `job_scraper/seen_jobs.json`. Keep entries with `"status": "ranked"` and `rank_score >= 45` — the Moderate Fit floor from `04-job-evaluation.md` (below that, a job is Weak/Poor Fit and would otherwise dominate the heatmap with jobs the user shouldn't chase). For each kept entry, note its `title`, `company`, `rank_score`, and — when present — its recorded `gaps`. An entry with no `gaps` field (ranked before gap persistence existed) is skipped, counted, and reported once in the terminal: *"N ranked jobs were scored before gap persistence and contribute nothing; `/rank --all` re-scores them."* Never back-fill a missing `gaps` field by guessing from the title.
+3. Read `job_scraper/seen_jobs.json`. Keep entries with `"status": "ranked"` **or `"processed"`** and `rank_score >= 45` — the Moderate Fit floor from `04-job-evaluation.md`. `processed` entries are the jobs the candidate invested most in, so dropping them would bias the heatmap away from exactly the roles being chased; they carry the same `rank_score` and `gaps` a `ranked` entry does. An ad-hoc `processed` entry with no `rank_score` (created from a pasted URL) has no gaps to contribute and is skipped along with the pre-gap-persistence entries below. (below that, a job is Weak/Poor Fit and would otherwise dominate the heatmap with jobs the user shouldn't chase). For each kept entry, note its `title`, `company`, `rank_score`, and — when present — its recorded `gaps`. An entry with no `gaps` field (ranked before gap persistence existed) is skipped, counted, and reported once in the terminal: *"N ranked jobs were scored before gap persistence and contribute nothing; `/rank --all` re-scores them."* Never back-fill a missing `gaps` field by guessing from the title.
 4. Read `.claude/skills/job-application-assistant/01-candidate-profile.md` to get the candidate's current skills and experience.
 5. Check `upskill/` for the most recent aggregate report file (`report-YYYY-MM-DD.md`) — if one exists, note its date and load it for the diff in Step 8.
 
@@ -52,9 +52,9 @@ In targeted mode, derive a slug from the job title and company for the report fi
 Extract required and preferred technical skills from each job source:
 
 ### Aggregate mode
-This mode now merges two sources — tracker rows (Step 2.1) and ranked postings from `seen_jobs.json` (Step 2.3) — so the same job is never double-counted and recorded gaps are preferred over inferred ones:
+This mode now merges two sources — tracker rows (Step 2.1) and ranked/prepared postings from `seen_jobs.json` (Step 2.3) — so the same job is never double-counted and recorded gaps are preferred over inferred ones:
 
-1. **Dedupe.** Match tracker rows against ranked entries on case-insensitive company + role (casefold + strip on both fields) — the same match `/notion-sync`'s Step 2 describes. A job present in both counts once.
+1. **Dedupe.** Match tracker rows against the kept `seen_jobs.json` entries (`ranked` or `processed`) on case-insensitive company + role (casefold + strip on both fields) — the same match `/notion-sync`'s Step 2 describes. A job present in both counts once.
 2. **Recorded gaps beat inferred skills.** For any job that has a recorded `gaps` array (from a ranked entry, or from a tracker row that matched one), use those gap bullets directly as the skill list for that job instead of inferring from `role`/`sector`/`notes`. For a ranked-only job with no `gaps` (already skipped and counted in Step 2.3) or a tracker-only row, fall back to inferring likely required skills from `role`, `sector`, and `notes` — optionally WebFetch the row's `source` URL for more detail, but skip if the URL is missing or dead.
 3. **One weight per job**, both 0–100 on the same scale: `(100 - fit_rating) / 100` for tracker rows, `(100 - rank_score) / 100` for ranked-only rows. If a job is in both (Step 3.1 matched it), prefer the tracker's numeric `fit_rating` for the weight.
 4. **Score.** Build a **skill frequency map**: for each extracted skill (recorded gap bullet or inferred skill), count how many jobs mention it, then multiply each job's contribution by its weight from Step 3.3. Track whether each contribution came from a recorded gap or an inferred one, for Step 5's provenance column.

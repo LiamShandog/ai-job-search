@@ -68,6 +68,12 @@ cover_letters/cover_*.*
 cover_letters/Cover_*.*
 !cover_letters/cover_example.tex
 
+# Submission packets assembled by /apply and /tailor. The PDFs are already caught
+# by the blanket *.pdf rule, but APPLY.txt, PASTE-READY.txt and START HERE.txt are
+# not - and they name the employers applied to, quote what was submitted, and set
+# out where the candidate is weak. Same reason documents/interview/** is ignored.
+outbox/
+
 # documents/ subfolder contents are personal — only README and folder structure are tracked
 documents/cv/**
 documents/linkedin/**

@@ -147,6 +147,20 @@ Update the matched row's `status` column using the canonical spellings from **Tr
 
 ---
 
+## Step 4b: Update the Scraper State
+
+The tracker now records a submission, so the posting's entry in `job_scraper/seen_jobs.json` — which `/apply` or `/tailor` most likely left at `processed` — is stale. This step is what makes `processed` mean "prepared but not sent" rather than drifting into a permanent label.
+
+1. Read `job_scraper/seen_jobs.json`. If the file is missing, skip this step silently — it only exists once `/scrape` has run.
+2. Match the tracker row to an entry. **Join on the posting URL first** (the tracker's `source` column against the entry's `url`), falling back to company + role only when no URL matches. Name matching alone is unsafe for the reason `notion-sync.md` Step 2 gives: a tracker role of "Forward Deployed Software Engineer, Internship - Commercial" contains "Software Engineer Intern" as a substring, so a naive match binds the record to the wrong requisition at the same employer.
+3. **Match found** → set `"status": "applied"` and `"applied_date": "YYYY-MM-DD"` (the tracker row's `date`). Leave every other field untouched, including `processed_date`, `processed_by`, `cv_file` and `cover_letter_file` — they are the record of what was prepared and when, and they stay meaningful after submission.
+4. **Already `applied`** → leave the status alone; do not rewrite `applied_date`. Re-running `/outcome` is idempotent here as everywhere else, and the status never moves backwards to `processed`.
+5. **No match** → say so plainly in Step 6 and continue. **Never create an entry.** A job applied to outside the scrape pipeline has no posting record to update, and inventing one would put an unfetched, unranked row into the file that `/rank` and `/scrape` both read.
+
+The post-submission lifecycle (`interview`, `offer`, `hired`, `rejected`, …) lives in the tracker only. `seen_jobs.json` stops at `applied` and is never advanced past it.
+
+---
+
 ## Step 5: Calibration Handoff
 
 Count the `outcome.md` files under `documents/applications/` with a **final** status (not `in_progress`).
@@ -166,6 +180,7 @@ Summarize what was recorded:
 > - `documents/applications/<company>_<role>/outcome.md` - status: <status>, <what changed>
 > - Archived: <which of cv_draft.tex / cover_letter.tex / job_posting.md were copied or fetched, and which were skipped and why>
 > - Tracker: status → <new status>
+> - `seen_jobs.json`: <key> → `applied` *(or: no matching entry - applied outside the scrape pipeline)*
 >
 > [Calibration suggestion from Step 5, if triggered]
 

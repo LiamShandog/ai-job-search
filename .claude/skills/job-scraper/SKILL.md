@@ -107,6 +107,7 @@ fragment link.
 For every candidate:
 - Skip if the URL or company+title combo already exists in `seen_jobs.json`
 - Skip if the company+role already appears in `job_search_tracker.csv`
+- **Apply the tracker-icon filter** from `search-queries.md` to rows sourced from the community internship boards: 🔒 (closed) is dropped at parse time and never stored; 🛂 (no sponsorship) and 🇺🇸 (US citizenship or clearance) are stored as `not_recommended` with a `board_flags` array and a `not_recommended_reason`, **unless the row's location is in Canada**, which keeps it. Strip the icons from `title` and `company` before storing — they are metadata, not part of the name.
 
 ### Step 2.5: Mass-Posting Detection (within this run)
 
@@ -136,16 +137,39 @@ For each new job, do a rapid fit check (NOT the full evaluation from `04-job-eva
       "url": "...",
       "first_seen": "YYYY-MM-DD",
       "fit": "high/medium/low",
-      "status": "new/skipped/evaluated/ranked/expired",
+      "status": "new/skipped/ranked/processed/applied/not_recommended/expired",
       "portal": "<source portal skill, e.g. jobindex-search>"
     }
   }
 }
 ```
 
+**This enum is the canonical definition of the `status` field.** It tracks a posting
+through the pipeline; the *application* lifecycle after submission (`interview`, `offer`,
+`hired`, `rejected`, …) lives in `job_search_tracker.csv` and never appears here.
+
+| Value | Meaning | Written by |
+|---|---|---|
+| `new` | Fetched and stored, not yet triaged | `/scrape` |
+| `skipped` | Fetched but not presented (dedup, mass-posting consolidation) | `/scrape` |
+| `ranked` | Scored against the fit framework; carries `rank_score` and routing fields | `/rank` |
+| `processed` | **Documents and research prepared and verified - not submitted** | `/apply`, `/tailor` |
+| `applied` | Submitted; the authoritative record is now the tracker row | `/outcome` |
+| `not_recommended` | Consciously dropped by the user after triage | set by hand |
+| `expired` | Posting is dead or past its deadline (retrieval genuinely failed after retrying) | `/rank` |
+
+`processed` is the one that is easy to misread: it means the CV, any cover letter, and
+the screening answers exist and passed their compile-and-verify step. It does **not**
+mean the application was sent. Only `/outcome` records a submission, and only it moves an
+entry to `applied`.
+
 The `portal` field records which CLI skill produced the job (results are already tagged per portal in Step 1b - persist that tag here). Entries written before this field existed lack it; the health check (Step 4.75) attributes those by matching the URL's domain against each portal's base URL, so do not backfill.
 
 `/rank` extends this schema additively: ranked entries also carry `rank_score` (0–100 overall score), `rank_verdict` (fit band, e.g. "strong fit"), `rank_date` (ISO date of ranking), and `strengths`/`gaps` (1-3 verbatim bullets each, copied from the scoring agent's findings). The `status` field is set to `"ranked"`. Do not drop any of these fields when re-writing entries. Entries ranked before `strengths`/`gaps` existed simply lack them; readers tolerate their absence and never backfill by guessing.
+
+`/apply` and `/tailor` extend it the same way when their documents pass verification: `processed_date` (ISO date), `processed_by` (`"apply"` or `"tailor"`), `cv_file`, `cover_letter_file` (omitted when no letter was written), and `outbox_dir` — the submission packet those two commands assemble, e.g. `"outbox/Palantir - Forward Deployed Engineer Intern"`. `cv_file` and `cover_letter_file` point at the **sources** in `cv/` and `cover_letters/`, which is where they are edited and compiled; `outbox_dir` points at the folder of renamed PDFs that actually gets uploaded. The folder name is shortened by hand and is not derivable from `title`, so it is stored rather than reconstructed. `/outcome` adds `applied_date` when it moves the entry to `applied`. These fields are additive and survive a re-rank - see `rank.md` Step 4, which forbids overwriting them.
+
+A `skipped` or `not_recommended` entry keeps every one of those fields: the documents and the packet still exist on disk, and dropping a posting is a decision that is often revisited.
 
 2. Only present jobs NOT already in the seen list or tracker.
 

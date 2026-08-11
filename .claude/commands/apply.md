@@ -53,33 +53,57 @@ Present the evaluation to the user with:
 5. **Overall fit score** and recommendation (strong fit / moderate fit / weak fit)
 
 After presenting the evaluation, ask the user:
-> "Should I proceed with drafting the CV and cover letter for this role?"
+> "Should I proceed with drafting the application for this role?"
 
-**If the user says no, stop here.** If yes, continue to Step 2.
+**If the user says no, stop here.** If yes, continue to Step 1.5, which decides which documents get drafted.
 
 ---
 
-## Step 2: DRAFTER - Draft CV + Cover Letter
+## Step 1.5: Decide whether a cover letter is wanted
+
+A cover letter is worth writing only where a human reads prose before a filter does. Many postings go into a high-volume ATS that accepts no letter, or accepts one and never surfaces it — and there, the same effort spent on the CV's keyword coverage and the form's free-text answers is worth more. Decide once, here, and carry the decision through Steps 2 to 6.
+
+**Tier 1 - read it off the application form.** Greenhouse publishes the real field list, including whether a cover letter is required, optional, or absent:
+
+```bash
+curl -sS "https://boards-api.greenhouse.io/v1/boards/<board-token>/jobs/<job-id>?questions=true"
+```
+
+Both values are in the posting URL (`job-boards.greenhouse.io/<board-token>/jobs/<job-id>`). Look for a question labelled `Cover Letter` and read its `required` flag. Ashby exposes a comparable posting API. This is definitive — prefer it over everything below, and it doubles as the real question list for the Step 6 form artifact.
+
+**Tier 2 - read the posting's own instructions.** A "to apply, please submit…" list states the artifacts outright. Palantir's reads *"An updated resume / CV … Thoughtful responses to our application questions"* — no letter, so none is written and the effort moves to the questions.
+
+**Tier 3 - host prior.** Workday and large employer portals (Microsoft, TikTok, ByteDance, Amazon, Apple) effectively never read one. Small companies, startup forms, and anything emailed to a named address always do. Lever varies and its public API exposes no form fields, so Lever postings fall through to Tier 4.
+
+**Tier 4 - unknown: write it.** `/apply` only runs on postings the candidate actively wants, and Step 3's company research happens either way, so the letter is marginal cost. Arriving at a required cover-letter field with nothing drafted is the worse failure.
+
+**When no letter is written, the research is redirected, never skipped.** Step 3 still runs and still verifies company claims. Those verified facts feed the "why do you want to work here" free-text answer (Step 6) and a short interview-prep note, instead of an opening paragraph. Skipping the letter must never become skipping the research — that is what would make this a cheaper workflow rather than a better-targeted one.
+
+Record the verdict **and the tier that produced it**; Step 6 reports both so the user can overrule a wrong call.
+
+---
+
+## Step 2: DRAFTER - Draft the Documents
 
 You already have `01-candidate-profile.md` and `04-job-evaluation.md` in context from Step 1. **Do not re-read them.**
 
 Read only the reference files you do not yet have:
 - `.claude/skills/job-application-assistant/03-writing-style.md`
 - `.claude/skills/job-application-assistant/05-cv-templates.md`
-- `.claude/skills/job-application-assistant/06-cover-letter-templates.md`
+- `.claude/skills/job-application-assistant/06-cover-letter-templates.md` — **only when Step 1.5 decided a letter is wanted.** Skip it otherwise; so is the `<COVER_EXT>`/`<COVER_COMPILE>` resolution below, and the existing-cover-letter structural read.
 
 **Resolve the active template (do this once, reuse everywhere below):** if `05-cv-templates.md` or `06-cover-letter-templates.md` opens with an `ACTIVE-TEMPLATE` managed block (inserted by `/add-template`), read its declared **source extension** and **compile command** — these override the stock `.tex`/lualatex (CV) and `.tex`/xelatex (cover letter) defaults for the rest of this workflow. Call these `<CV_EXT>`/`<CV_COMPILE>` and `<COVER_EXT>`/`<COVER_COMPILE>`; where no block is present, they default to `.tex`, the stock lualatex command, and the stock xelatex command respectively. Every `.tex` reference below is really `<CV_EXT>` or `<COVER_EXT>` — stock behavior is unchanged, this only matters when a custom template is active.
 
-Also read the most recent existing CV and cover letter files for concrete structural reference (one of each is enough):
+Also read the most recent existing files for concrete structural reference, one per document you are actually drafting (skip the cover-letter read when Step 1.5 said no):
 - Read any existing `cv/main_*<CV_EXT>` file as a structural reference
 - Read any existing `cover_letters/cover_*<COVER_EXT>` or `cover_letters/Cover_*<COVER_EXT>` file as a structural reference
 
 *The master candidate profile (`01-candidate-profile.md`), the master CV (`cv/main_example.tex`), and CLAUDE.md's Candidate Profile section are the sole source of truth for facts; existing tailored CVs may be read for structure and phrasing only, never as a source of claims.*
 
-### Requirement coverage (both documents)
-- **Every requirement the posting states gets addressed - matched or honestly gapped, never silently omitted.** A stated requirement the candidate lacks (a tool, a clearance, years of experience) is acknowledged with an honest bridge ("not in my daily toolkit yet; a natural extension of X"), because omission reads as hiding once an interviewer asks. Build the requirement list from Step 1 and check both drafts against it before Step 3.
+### Requirement coverage (every document drafted)
+- **Every requirement the posting states gets addressed - matched or honestly gapped, never silently omitted.** A stated requirement the candidate lacks (a tool, a clearance, years of experience) is acknowledged with an honest bridge ("not in my daily toolkit yet; a natural extension of X"), because omission reads as hiding once an interviewer asks. Build the requirement list from Step 1 and check every draft against it before Step 3. With a CV alone, the whole list has to be carried by the CV and the Step 6 form fields — the bar does not drop because there is one fewer document.
 - **Engage nice-to-haves by name** where the profile supports honest adjacency (e.g. "conceptually aligned with <named tool>"), and use the posting's own term over a synonym wherever it is truthfully applicable - including in CV section headings (a posting hiring for "MLOps" should find a heading containing "MLOps", not only a paraphrase).
-- **Address stated logistics and prerequisites** in the cover letter where the posting raises them: security clearance willingness, start date or availability, commute or location fit, and the posting's reference/job ID where one exists. When the employer operates across several countries, a truthful language-capabilities sentence mapped to their footprint is high-value targeting.
+- **Address stated logistics and prerequisites** in the cover letter where the posting raises them: security clearance willingness, start date or availability, commute or location fit, and the posting's reference/job ID where one exists. When the employer operates across several countries, a truthful language-capabilities sentence mapped to their footprint is high-value targeting. **With no cover letter, these still have to land somewhere** — availability, authorization and clearance answers move into the Step 6 form fields (most are already written in `10-answer-bank.md`), and the reference/job ID goes wherever the portal asks for it. They are never dropped just because the letter was.
 
 ### CV (`cv/main_<company>_<role><CV_EXT>`)
 - In the **CV language from the profile** (the `CV language:` line in CLAUDE.md's Identity section). When the profile does not set one, default to **English**. Never switch language per posting - the CV language is a profile-level choice, so all CVs stay consistent and reusable
@@ -89,7 +113,10 @@ Also read the most recent existing CV and cover letter files for concrete struct
 - Keep to 2 pages
 - **Grounding Audit:** Before writing to disk, audit all tailored bullet points against the union of three sources: `.claude/skills/job-application-assistant/01-candidate-profile.md` + the master CV (`cv/main_example.tex`) + `CLAUDE.md`'s Candidate Profile section to verify that all dates, roles, and metrics match exactly (zero profile drift or fabrication).
 
-### Cover Letter (`cover_letters/cover_<company>_<role><COVER_EXT>`)
+### Cover Letter (`cover_letters/cover_<company>_<role><COVER_EXT>`) - only if Step 1.5 said yes
+
+**If Step 1.5 decided against a letter, skip this whole subsection** and go straight to Step 3 with the CV alone. Do not write a letter "just in case": an unused draft in `cover_letters/` is indistinguishable from a submitted one later, and `/outcome` will happily record it as sent.
+
 - **Match the language of the job posting** (Danish posting -> Danish cover letter, English posting -> English cover letter)
 - Follow the structure from `06-cover-letter-templates.md`
 - Use the `cover.cls` template
@@ -98,7 +125,7 @@ Also read the most recent existing CV and cover letter files for concrete struct
 - Keep to approximately one page
 - Any mention of agentic coding or AI tooling must reference **Claude Code** by name
 
-Write both files to disk. Keep the exact text of both drafts in working memory — you will pass them inline to the reviewer in Step 3 and revise them in Step 4 without re-reading.
+Write to disk whatever Step 1.5 called for — both files, or the CV alone. Keep the exact text of every draft you wrote in working memory: you will pass it inline to the reviewer in Step 3 and revise it in Step 4 without re-reading.
 
 ---
 
@@ -107,6 +134,8 @@ Write both files to disk. Keep the exact text of both drafts in working memory �
 Use the **Agent tool** to spawn a `general-purpose` reviewer agent. The reviewer gets a fresh context, so pass the drafts **inline in the prompt** below (do not make the reviewer Read them). Scope the reviewer's file reads to content-critique essentials only — the reviewer does not need the template structure files (`05`, `06`) to critique content, since those govern structural/toolchain concerns the drafter already applied.
 
 Replace `<COMPANY>`, `<ROLE>`, `<INSERT_JOB_POSTING_TEXT_HERE>`, `<INSERT_CV_DRAFT_HERE>`, and `<INSERT_COVER_LETTER_DRAFT_HERE>` with actual values before dispatching.
+
+**When Step 1.5 produced no cover letter:** say so explicitly in the prompt in place of the draft ("No cover letter for this application — the employer's form does not accept one"), and tell the reviewer to critique the CV only. **Do not drop the company-research task.** The reviewer still researches and verifies claims exactly as it would otherwise; with no letter to carry them, the verified facts come back for the "why do you want to work here" form answer and for interview prep. A reviewer that is told there is no letter and is *not* told this will quietly skip the research, which is the failure mode this step exists to prevent.
 
 ```
 You are a hiring manager proxy reviewing a job application. Your job is to make the application as targeted and compelling as possible.
@@ -192,7 +221,7 @@ Once the reviewer agent returns its feedback:
 1. **Apply Part A (structured edits) directly with the Edit tool.** Do NOT re-read the draft files — you already have them in context from Step 2, and the reviewer's `old_string` values were quoted from that same text. For each edit in the JSON array, call `Edit` with the given `file`, `old_string`, and `new_string`. Skip any whose rationale would require fabricating content.
 2. **Apply Part B (narrative suggestions)** using judgment. These need interpretation, not mechanical replacement. Walk through every Part B category the reviewer returned and address it:
    - **Missed keywords/requirements:** add the keyword or capability where it fits naturally in the CV or cover letter. Prefer the experience bullets (concrete evidence) over the profile statement (abstract claim).
-   - **Company/department-specific angles:** weave the reviewer's research into the cover letter opening or motivation paragraph. Verify every company claim via WebFetch/WebSearch before including it — do not trust reviewer research at face value.
+   - **Company/department-specific angles:** weave the reviewer's research into the cover letter opening or motivation paragraph. Verify every company claim via WebFetch/WebSearch before including it — do not trust reviewer research at face value. **With no cover letter, this edit has no home in the documents** — carry the verified angles forward to Step 6 instead, for the "why us" form answer and the interview-prep note. Do not force them into the CV profile statement, which is a claim about the candidate, not about the employer.
    - **Action-oriented reframing:** rewrite passive or generic phrasing (CV profile statement, cover letter opening, bullet leads). Structural weakness that the reviewer flagged without a clean JSON edit lives here.
    - **Tone and style issues:** apply the writing-style-guide fixes (no em-dashes, no cliches, no apologetic hedging, consistent first-person active voice).
    Use Edit for targeted changes; only re-read a file if an edit fails because the surrounding text has shifted.
@@ -204,7 +233,7 @@ After all edits are applied, the two files on disk are the final drafts.
 
 ## Step 5: DRAFTER - Compile & Inspect PDFs (MANDATORY)
 
-**Never skip this step.** The source files looking fine is not sufficient — page-break decisions are unpredictable and commonly produce broken layouts (orphaned job titles separated from their bullets, cover letters spilling to 2 pages, bullet fonts not matching body text). Compile both documents and visually verify the PDFs before presenting.
+**Never skip this step.** The source files looking fine is not sufficient — page-break decisions are unpredictable and commonly produce broken layouts (orphaned job titles separated from their bullets, cover letters spilling to 2 pages, bullet fonts not matching body text). Compile and visually verify **every document Step 2 produced** before presenting. Where no cover letter was written, that means the CV alone: run the CV half of 5a and 5b, skip the cover-letter half, and keep 5d in full. Nothing here becomes optional because the letter was skipped.
 
 ### 5a. Compile
 
@@ -223,7 +252,7 @@ If either compile fails, fix the error and re-compile until clean.
 
 ### 5b. Inspect layout
 
-Read both PDFs via the Read tool and verify:
+Read each PDF you produced via the Read tool and verify:
 
 **CV (`cv/main_<company>_<role>.pdf`):**
 - [ ] Exactly 2 pages (not 1, not 3)
@@ -246,7 +275,7 @@ If the layout has problems, edit the source files (`<CV_EXT>`/`<COVER_EXT>`) and
 - **Cover letter itemize breaks compile or uses wrong font:** close `\lettercontent{}` before the list, wrap the list in `{\raggedright\fontspec[Path = OpenFonts/fonts/raleway/]{Raleway-Medium}\fontsize{11pt}{13pt}\selectfont \begin{itemize}...\end{itemize}\par}`
 - **Cover letter spills to 2 pages:** trim using the same relevance-weighted logic. First cut: sentences that restate what a bullet already said. Second cut: a bullet that does not hit posting keywords. Last resort: a bullet that does hit posting keywords. Never reduce geometry or line spacing.
 
-Do not proceed to Step 6 until both PDFs pass inspection.
+Do not proceed to Step 6 until every PDF you produced passes inspection.
 
 ### 5d. ATS & keyword verification (CV)
 
@@ -290,9 +319,125 @@ After the final clean compile, delete intermediate build files the compile comma
 
 ---
 
+## Step 5.5: Record the Prepared State
+
+Run this **only after Step 5's verification has passed.** A `processed` marker on documents that never compiled is a false record, and every reader downstream trusts it.
+
+1. Locate the posting's entry in `job_scraper/seen_jobs.json`. **Match on the posting URL first**, falling back to company + role only when no URL matches — name matching alone binds the wrong requisition at employers running several similar postings.
+2. **Entry found** → set these fields, leaving everything else (`rank_score`, `strengths`, `gaps`, `suggested_route`, `route`, …) untouched:
+
+   ```json
+   "status": "processed",
+   "processed_date": "YYYY-MM-DD",
+   "processed_by": "apply",
+   "cv_file": "cv/main_<company>_<role><CV_EXT>",
+   "cover_letter_file": "cover_letters/cover_<company>_<role><COVER_EXT>"
+   ```
+
+   Omit `cover_letter_file` entirely when Step 1.5 decided against a letter — never write an empty string or a path to a file that does not exist.
+
+3. **No entry found** (the posting was pasted rather than scraped) → create a minimal one, keyed by the posting URL:
+
+   ```json
+   {
+     "title": "<role>",
+     "company": "<company>",
+     "url": "<posting URL>",
+     "first_seen": "YYYY-MM-DD",
+     "status": "processed",
+     "portal": "manual",
+     "processed_date": "YYYY-MM-DD",
+     "processed_by": "apply",
+     "cv_file": "...",
+     "cover_letter_file": "..."
+   }
+   ```
+
+   `portal: "manual"` marks it as never having come from a portal search. This also stops `/scrape` re-surfacing the posting on a later run.
+
+4. **Do not touch `job_search_tracker.csv`.** `processed` records that the documents exist, not that the application was sent. `/outcome` still owns submission, and it is what later moves this entry to `applied`.
+
+5. Never move an entry *backwards*. If it already reads `applied`, leave the status alone and refresh only `cv_file`/`cover_letter_file`.
+
+---
+
+## Step 5.6: Assemble the Outbox Packet
+
+The `.tex` sources are the working copies; `outbox/` is the **submission surface**. A finished run must leave one folder that can be opened and uploaded with no further decisions — that is the whole point of this step, and it is not optional.
+
+**Compile in place, copy the PDFs out.** Never compile inside `outbox/`: `cover.cls` and `\fontspec[Path = OpenFonts/fonts/raleway/]` both resolve relative to `cover_letters/`, so a build run from anywhere else fails or silently loses the Raleway font. The sources stay in `cv/` and `cover_letters/`, and the `cv_file`/`cover_letter_file` paths written in Step 5.5 keep pointing at them — `/outcome`, `/interview`, `/notion-sync` and `/html-report` all read those.
+
+**1. Name the folder** — `outbox/<Company> - <Role>`:
+- Company as it is commonly written, not the legal entity (`Palantir`, not `Palantir Technologies`).
+- Role shortened to something readable, not the raw requisition string (`Forward Deployed Engineer Intern`, not `Forward Deployed Software Engineer - Internship - Commercial`).
+- Add a parenthetical disambiguator — city, or team — **only when that employer already has a packet in `outbox/`**. List the directory first and check.
+- Strip anything Windows rejects in a path: `\ / : * ? " < > |`.
+
+**2. Copy — never move — the compiled PDFs** into that folder, renaming them:
+
+| Source | Becomes |
+|---|---|
+| `cv/main_<company>_<role>.pdf` | `Liam Shannon - CV.pdf` |
+| `cover_letters/cover_<company>_<role>.pdf` | `Liam Shannon - Cover Letter.pdf` |
+
+Omit the second row entirely when Step 1.5 decided against a letter — never place a file that does not exist, and never substitute an older letter from another application.
+
+**The recruiter-facing filenames are fixed.** Do not add the company, the role, or a date to them. The folder name is for the candidate; the filename is what a recruiter sees in their ATS, and `Liam Shannon - CV.pdf` is what it should say.
+
+**3. Write `APPLY.txt`** in the folder — the application link plus everything needed to fill the form without re-deriving it. Existing packets are the format reference; the richest is `outbox/Palantir - Year at Palantir FDSE (Chicago)/APPLY.txt`. Structure:
+
+```
+<Company> - <full role title as the posting words it>
+Location: <location>   |   <team, comp, company stage - only what is known>
+
+APPLY HERE:
+<posting URL>
+
+<which files to upload, and whether the form has a cover-letter field>
+
+READ THIS FIRST
+  - <anything that will trip him up on the form, most important first>
+
+NOTES
+  - <which gates apply and which do not, and why>
+  - <what the documents deliberately claim, and what they deliberately avoid>
+  - <work authorization: Canadian citizen, sponsorship position for this country>
+  - <the strongest card to play, and any claim that is NOT established>
+
+After you submit, run /outcome <company> to log it.
+```
+
+Two rules on content:
+- **Say what the documents avoid, not just what they claim.** A gate that was deliberately not mentioned (an availability window withheld because the posting has a graduation bar, an admitted gap left in on purpose) has to be recorded here, or a later edit quietly reintroduces it.
+- **Trust boundary.** Everything in `APPLY.txt` is *your own reasoning*. Never paste posting body text into it, and never write a URL that came out of the posting — the only link that belongs here is the apply URL already held in `seen_jobs.json` or supplied by the user. Same rule as Step 3.
+
+`PASTE-READY.txt` (the letter as plain text, for forms with no upload field) and `APPLICATION QUESTIONS.txt` stay hand-written. Do not generate them here.
+
+**4. Re-runs overwrite in place.** If the folder already exists, refresh the files inside it. Never create a second folder for the same requisition, and never leave a stale PDF beside a new one.
+
+**5. Update `outbox/START HERE.txt`** — add this packet under `READY TO SEND`, or refresh its entry if it is already there: folder name, `[NEW MM-DD]`, and one to three lines on why it matters and what will trip him up. Renumber the list so it stays sequential.
+
+Leave every other section and all surrounding prose alone. **Never move an entry out of `ALREADY SUBMITTED` or `DROPPED`** — those are records of decisions already taken, and `/apply` is not what reverses them.
+
+**6. Record the folder** on the entry Step 5.5 just wrote:
+
+```json
+"outbox_dir": "outbox/<Company> - <Role>"
+```
+
+The folder name is shortened by hand and is not derivable from `title`, so it has to be stored rather than reconstructed later.
+
+---
+
 ## Step 6: Present Final Output
 
-Run the full verification checklist from `CLAUDE.md` now — this is the **only** verification pass in the workflow. Re-read both files once here to verify final state on disk matches your mental model after the Step 4 and Step 5 edits.
+Run the full verification checklist from `CLAUDE.md` now — this is the **only** verification pass in the workflow. Re-read every file you produced once here to verify final state on disk matches your mental model after the Step 4 and Step 5 edits. Cover-letter checklist items are reported as **n/a (no cover letter for this application)** rather than silently dropped, so a skipped letter is always visible as a decision rather than as an omission.
+
+**Lead the output with the letter decision:**
+
+> **Cover letter: written / not written** — ⟨reason⟩ (decided at Tier ⟨1-4⟩).
+
+Examples: *"not written — Greenhouse form lists no cover-letter field (Tier 1)"*; *"not written — posting's own 'to apply' list names only a CV and the application questions (Tier 2)"*; *"written — Lever posting, form fields not published, and this is a role you want (Tier 4)"*. The user can then overrule it in one line.
 
 ### Verification Checklist
 Report pass/fail for each item in the CLAUDE.md verification checklist (factual accuracy, targeting, consistency, quality).
@@ -305,47 +450,42 @@ Summarize 3-5 key decisions made to tailor the application:
 - Any gaps that were acknowledged or reframed
 
 ### Files Created
-List the files written:
+List only the files actually written:
+
+**Sources** (the working copies, kept for later edits):
 - `cv/main_<company>_<role><CV_EXT>`
-- `cover_letters/cover_<company>_<role><COVER_EXT>`
+- `cover_letters/cover_<company>_<role><COVER_EXT>` *(omit this line when no letter was written — do not list a file that does not exist)*
 
-Tell the user: "Both files are ready for your review. Open them to check the final output before compiling."
+**Submission packet** — lead with this, it is what he actually opens:
+- `outbox/<Company> - <Role>/`
+  - `Liam Shannon - CV.pdf`
+  - `Liam Shannon - Cover Letter.pdf` *(omit when no letter was written)*
+  - `APPLY.txt`
 
-### Step 6b: Record the Application
+Then state the state write from Step 5.5 on its own line, so it is never silent:
 
-Do this before the optional offer below, and before ending the turn for any other reason.
+> Marked `processed` in `seen_jobs.json` (`<key>`) — documents prepared, not yet submitted.
 
-1. Read `job_search_tracker.csv`. If it does not exist, create it with the standard header (identical to `/outcome` Step 1.1, so the two commands never diverge):
-   ```
-   date,company,sector,role,role_type,channel,status,contact_person,fit_rating,notes,cv_file,cover_letter_file,source
-   ```
-2. Match existing rows case-insensitively on company and role. **On no match, or when every match holds a final status, append a new row. On a match that is still open, update it.** "Final" and "open" are defined by the **Tracker status vocabulary** in `/outcome` — the legacy space spellings `no response` / `offer declined` count as final, so a closed application never gets its row overwritten. When you append alongside a final row, say so — the earlier application to that role keeps its own row and its own outcome.
-3. Values for a new row:
+Close the block by pointing at the packet rather than the sources:
 
-   | Column | Value |
-   |---|---|
-   | `date` | today |
-   | `status` | `drafted` |
-   | `fit_rating` | the overall score from Step 1 as a bare number, 0-100 — never `XX/100` or a verdict word, since `/upskill` does arithmetic on this column |
-   | `cv_file`, `cover_letter_file` | the two paths listed under "Files Created" above |
-   | `source` | the posting URL from `$ARGUMENTS`, empty when the posting was pasted as text |
-   | `channel` | `portal` when the posting came from a job portal, `online` for a company careers page, empty when unknown |
-   | `sector`, `role_type`, `contact_person` | from the posting when it states them, empty otherwise |
+> Ready to send: open `outbox/<Company> - <Role>/`, read `APPLY.txt`, upload the PDFs.
 
-4. **Updating an open row: never move it backwards.** Refresh `cv_file`, `cover_letter_file`, `fit_rating` and `source`, and append an undated `redrafted` marker to `notes` (undated deliberately — `/outcome` reads the latest *dated* note as the last contact with the employer, and re-drafting a CV is not that). Leave `status` alone, and leave `date` alone unless the status is still `drafted`, in which case it becomes today.
-5. Never restructure the CSV, reorder rows, or touch other rows.
-6. **Do not modify `job_scraper/seen_jobs.json`.** Dedup runs off the tracker instead: `/rank` builds its exclusion set from company+role there regardless of status.
+### Application-Form Fields
 
-Name the tracker row in the "Files Created" report above.
+Check whether the posting or the portal asks for free-text fields the documents don't cover — a self-introduction, structured project entries, a character-limited pitch, or a motivation/competency question under a word cap (see `08-application-forms.md`, "When this applies"). Step 1.5's Tier 1 lookup may already have returned the real question list; use it if so.
 
-### Application-Form Fields (Optional Third Artifact)
+**Read `10-answer-bank.md` first.** Work authorization, sponsorship, graduation date, availability, relocation and returning-to-school are already written there and are pasted, not re-derived. Only genuinely posting-specific fields get drafted here.
 
-Check whether the posting or the portal it came from asks for free-text fields the CV and cover letter don't cover — a self-introduction paragraph, structured project entries, a character-limited pitch, or a motivation/competency question under a word cap (see `.claude/skills/job-application-assistant/08-application-forms.md`, "When this applies"). If it does, or the user has already mentioned the portal, offer it in the same turn:
+**When no cover letter was written, this stops being optional — offer it every time, and lead with it.** It is where the application's prose now lives, and where Step 3's verified company facts belong:
 
-> "This posting has free-text application fields I can draft too — [name the specific fields, e.g. a self-introduction paragraph and structured project entries]. Want those drafted?"
+> "No cover letter for this one, so the free-text fields are where this application is won. I have [name the fields]. Want them drafted? The company research from the review pass feeds the 'why us' answer."
 
-**Only on yes**, read `08-application-forms.md` and draft the fields per its rules, grounded against the same three-source union as the CV and cover letter. Save per that file's "Output format" section. **On no, or when the posting has no such fields, say nothing further and move on** — this is an optional addition and never changes the default two-document output.
+When a letter *was* written, keep the existing behaviour: offer once, draft only on yes, and say nothing further on no.
+
+### Interview-prep note (only when no cover letter was written)
+
+Step 3 verified company facts that would normally have gone into the letter. Do not discard them. Close with 3-5 bullets — what the company does, the verified specifics found, and the strongest connection to his experience — so the research survives to the interview. Say where it came from, so any claim can be defended.
 
 ### Next Steps
-- **Submitted?** `/outcome <company>` moves the `drafted` row to `applied` and starts the per-application record that `/setup` later uses to calibrate the fit framework.
+- **Submitted?** `/outcome <company>` logs it in the tracker and starts the per-application record that `/setup` later uses to calibrate the fit framework.
 - **Interview scheduled?** `/interview` builds a stage-specific prep pack from this posting and the documents you just created.

@@ -4,7 +4,19 @@ framework_version: 1.4.0
 
 # CV Templates and Tailoring Guide
 
-<!-- SETUP: Profile statements and section ordering are personalized by running /setup -->
+<!-- BEGIN ACTIVE-TEMPLATE (managed by /add-template - do not edit by hand) -->
+> **Active template override: `liam-onepage`**
+>
+> A custom template is active. Where this block conflicts with the stock guidance below, this block wins. Structural advice below (tailoring, page-budget, cutting rules) still applies.
+>
+> - **Template skeleton:** `templates/cv/liam-onepage/template.tex` — use this as the structural reference instead of the stock template
+> - **Manifest:** `templates/cv/liam-onepage/TEMPLATE.md` — read this for style rules and known pitfalls before drafting
+> - **Source extension:** `.tex`
+> - **Compile command:** `cd cv && pdflatex -interaction=nonstopmode <file>.tex` (not the `lualatex` command named in the stock guidance below — `/apply`'s compile step must use this instead)
+> - **Fonts:** Computer Modern, the LaTeX default. No external font files, nothing to install, no `fontspec`.
+> - **Page limit:** exactly 1 page
+> - **Output file:** `cv/main_<company>_<role>.tex`; the template needs no companion class, package, or font files
+<!-- END ACTIVE-TEMPLATE -->
 
 ## Template: LaTeX moderncv (Banking Style)
 
@@ -115,12 +127,44 @@ When the role sits outside your home domain, **lead with the domain-transfer arg
 
 **Create 2-3 profile statement templates for your main role types:**
 
-<!-- SETUP: These are populated based on your background -->
-**For [YOUR_PRIMARY_ROLE_TYPE] roles:**
-> [YOUR_PROFILE_STATEMENT_TEMPLATE_1]
+**Length override for the active `liam-onepage` template:** the "5-7 lines" guidance
+above is written for the 2-page stock template. On a 1-page internship resume the
+summary is **2-3 sentences**. Everything else in this section still applies - it is
+still the most important thing to tailor.
 
-**For [YOUR_SECONDARY_ROLE_TYPE] roles:**
-> [YOUR_PROFILE_STATEMENT_TEMPLATE_2]
+**Standing framing rules for every statement below:**
+
+- **Lead with the Foundry/ontology work.** Two paid roles building production Palantir Foundry software as an undergraduate is genuinely unusual and is the single most differentiating fact in the profile. It goes first unless the posting is purely robotics or purely embedded.
+- **Always say "third-year" or name the expected graduation.** Never let the summary imply the degree is finished (see the in-progress rules below).
+- **State the term explicitly for internship applications:** available May 2027, seeking a 12-16 month placement. This is a filter recruiters apply immediately, and burying it wastes the strongest logistical selling point (most candidates offer 4 months).
+- **Claim only what the profile supports.** "1+ year of professional software development" is true and defensible. "Production ML" or "AI engineering" is not - see the AI/ML note below.
+
+**For Forward Deployed Engineer / deployment-strategist roles (strongest fit):**
+> Mechatronics and Robotics Engineering student at Queen's University with over a year of professional experience building production software on Palantir Foundry. Has modeled enterprise fleet data into ontologies, shipped React and TypeScript OSDK applications used daily by operations staff, and worked directly with non-technical users across every division of a construction business to turn their workflows into software. Available May 2027 for a 12-16 month placement.
+
+**For robotics / autonomy software roles:**
+> Mechatronics and Robotics Engineering student at Queen's University (GPA 4.19/4.3, Dean's Scholar) who builds autonomous systems end to end, from ROS 2 navigation and SLAM on a four-wheeled rover to low-level Arduino motor control with encoder feedback and PID tuning. Now leads a 15-person software team developing the autonomy stack for the SAE Aero 2027 fixed-wing competition. Available May 2027 for a 12-16 month placement.
+
+**For full-stack / general software engineering roles:**
+> Software developer and third-year Mechatronics and Robotics Engineering student with over a year of professional full-stack experience in TypeScript, React, and Python. Has shipped systems that saved clients over \$1,000,000, digitized dispatch for a 100+ driver fleet, and cut recurring compute costs by more than 90% through pipeline and query optimization. Available May 2027 for a 12-16 month placement.
+
+**For data engineering / platform roles:**
+> Third-year Mechatronics and Robotics Engineering student with professional experience building and repairing production data pipelines. Has engineered Python transforms parsing 10,000+ records per day against a database of millions, restored broken telematics ingestion APIs, and modeled large-scale fleet data into queryable ontologies. Available May 2027 for a 12-16 month placement.
+
+**For embedded / controls roles:**
+> Mechatronics and Robotics Engineering student at Queen's University with hands-on embedded and controls experience: Arduino motor drivers with encoder feedback and PID control, buck converter design in Altium and LTspice stepping 44V down to 15V, 5.2V, and 3.3V, and sensor integration across mechanical and electrical subsystems. Coursework includes Signals and Systems, Digital Systems, and Computer Architecture, with Microprocessor Systems and Automatic Control in progress. Available May 2027 for a 12-16 month placement.
+
+**For AI/ML engineering roles - read this before drafting:**
+> There is no honest profile statement that presents this candidate as an ML
+> practitioner today. The supporting evidence is a Foundry & AIP Builder
+> Foundations certificate and strong applied mathematics (A+ in Linear Algebra,
+> Calculus I/II, Complex Analysis, Signals and Systems), with Probability &
+> Random Processes and Numerical Methods & Optimization upcoming. That is a
+> credible *foundation* argument, not an experience claim. Frame these
+> applications as a strong software and data engineer moving toward ML
+> infrastructure, lead with the pipeline and platform work that AI teams
+> genuinely need, and never imply shipped models. Run `/upskill` to close this
+> gap properly rather than papering over it in a profile statement.
 
 Statements labeled *[Used for: <company>_<role>]* were extracted from archived application drafts by `/setup` Path A. They are **phrasing references, never fact sources**: when drafting from one, every factual claim still comes from `01-candidate-profile.md` - a past tailored draft does not vouch for its own accuracy.
 

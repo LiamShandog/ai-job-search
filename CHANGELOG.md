@@ -61,6 +61,30 @@ per-file diff commands.
   walkthrough of the workflow (recorded August 2026), for newcomers who want to see the
   setup-to-application flow before reading. Docs only.
 
+- **`/apply` and `/tailor` assemble a submission packet in `outbox/`** - new Step 5.6 on both
+  commands. A verified run now ends with `outbox/<Company> - <Role>/` holding the compiled
+  PDFs under their recruiter-facing names (`Liam Shannon - CV.pdf`,
+  `Liam Shannon - Cover Letter.pdf`) plus an `APPLY.txt` carrying the apply link, which files
+  to upload, the gates that do and do not apply, and what the documents deliberately claim or
+  avoid. The convention already existed on disk but was hand-built and referenced nowhere in
+  the repo - a grep for "outbox" returned zero matches in `.claude/`, `CLAUDE.md` or
+  `.gitignore`.
+
+  **Compile in place, copy the PDFs out.** Documents are never built inside `outbox/`:
+  `cover.cls` and `\fontspec[Path = OpenFonts/fonts/raleway/]` resolve relative to
+  `cover_letters/`, so a build run elsewhere fails or silently loses the Raleway font. Sources
+  stay in `cv/` and `cover_letters/`, and `cv_file`/`cover_letter_file` keep pointing at them
+  for `/outcome`, `/interview`, `/notion-sync` and `/html-report`.
+
+  New additive `outbox_dir` field on the `seen_jobs.json` entry records the packet folder,
+  which is shortened by hand and not derivable from `title`. Documented in the job-scraper
+  skill's canonical schema section and added to `/rank`'s never-drop-on-rewrite list.
+  `outbox/` is now gitignored: the PDFs were already caught by the blanket `*.pdf` rule, but
+  `APPLY.txt`, `PASTE-READY.txt` and `START HERE.txt` were untracked-but-not-ignored, and they
+  name the employers applied to and set out where the candidate is weak. New
+  `tests/test_outbox_contract.py` pins the packet filenames, the compile-in-place rule and the
+  ignore rule.
+
 - **Spec-pinning tests for the Language Gate's `/rank` contract** (#278) - four regression
   guards in `tests/test_rank_command.py` pinning the `language_gate`/`language_note` fields
   through Steps 2-5 of `/rank`, including the Step 4 persistence rule that was live-debugged

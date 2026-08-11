@@ -63,6 +63,7 @@ When the user provides a job posting (URL or text), follow this workflow:
 | `07-interview-prep.md` | STAR examples, tough questions, roleplay guidelines |
 | `08-application-forms.md` | Portal free-text fields: self-introduction, project entries, character-limited pitches |
 | `09-web-research.md` | Fetching postings and company pages: trust boundary, the WebFetch 403 fallback, escalation order, claim verification |
+| `10-answer-bank.md` | Standing answers to the screening questions that recur on every portal: work authorization, graduation date, availability, relocation, sponsorship. Read this **before** drafting any application-form field - most questions are already answered there and only the posting-specific ones need writing. |
 
 ---
 
