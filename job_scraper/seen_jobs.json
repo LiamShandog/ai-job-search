@@ -823,7 +823,7 @@
       "url": "https://apply.careers.microsoft.com/careers/job/1970393556951950",
       "first_seen": "2026-08-08",
       "fit": "medium",
-      "status": "ranked",
+      "status": "skipped",
       "portal": "tracker:speedyapply",
       "term_class": "UNKNOWN",
       "locations": [
@@ -851,7 +851,8 @@
       "route_reason": "portal application, ATS reads it first",
       "apply_host": "employer-portal",
       "route": "apply",
-      "route_set_by": "user 2026-08-10"
+      "route_set_by": "user 2026-08-10",
+      "not_recommended_reason": "posting is closed, confirmed by the user 2026-08-11."
     },
     "https://lifeattiktok.com/search/7668696895234197813": {
       "title": "Software Engineer Intern - ML Infra - 2027 Start - PhD",
@@ -2408,7 +2409,7 @@
       "url": "https://ca.linkedin.com/jobs/view/software-engineering-intern-backend-at-terminal-4450632614",
       "first_seen": "2026-08-08",
       "fit": "medium",
-      "status": "ranked",
+      "status": "skipped",
       "portal": "linkedin-search",
       "term_class": "UNKNOWN",
       "locations": [
@@ -2439,7 +2440,8 @@
       "eval_score": 84,
       "eval_verdict": "Strong Fit",
       "eval_date": "2026-08-11",
-      "eval_file": "job_scraper/preprocess_2026-08-11.md"
+      "eval_file": "job_scraper/preprocess_2026-08-11.md",
+      "not_recommended_reason": "term mismatch: posting is a 4-12 month internship starting fall or winter term. Availability begins May 2027. Dropped by the user 2026-08-11."
     },
     "https://ca.linkedin.com/jobs/view/software-engineering-intern-applications-fall-spring-co-op-at-rivian-and-volkswagen-group-technologies-4424263570": {
       "title": "Software Engineering Intern - Applications (Fall-Spring Co-op)",
@@ -2481,7 +2483,7 @@
       "url": "https://ca.linkedin.com/jobs/view/software-engineering-intern-data-platform-at-terminal-4450624778",
       "first_seen": "2026-08-08",
       "fit": "medium",
-      "status": "ranked",
+      "status": "skipped",
       "portal": "linkedin-search",
       "term_class": "UNKNOWN",
       "locations": [
@@ -2512,7 +2514,8 @@
       "eval_score": 77,
       "eval_verdict": "Good Fit",
       "eval_date": "2026-08-11",
-      "eval_file": "job_scraper/preprocess_2026-08-11.md"
+      "eval_file": "job_scraper/preprocess_2026-08-11.md",
+      "not_recommended_reason": "term mismatch: posting is a 4-12 month internship starting fall or winter term. Availability begins May 2027. Dropped by the user 2026-08-11."
     },
     "https://www.linkedin.com/jobs/view/software-engineer-intern-at-pylon-4438841696": {
       "title": "Software Engineer, Intern",
