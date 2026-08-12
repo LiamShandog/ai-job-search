@@ -994,7 +994,11 @@
       "route_reason": "portal application, ATS reads it first",
       "apply_host": "employer-portal",
       "route": "apply",
-      "route_set_by": "user 2026-08-10"
+      "route_set_by": "user 2026-08-10",
+      "eval_score": 83,
+      "eval_verdict": "Strong Fit",
+      "eval_date": "2026-08-11",
+      "eval_file": "job_scraper/preprocess_2026-08-11.md"
     },
     "https://www.deshaw.com/careers/5893": {
       "title": "Software Developer - Ph.D. Intern - New York - Summer 2027",
@@ -1036,7 +1040,7 @@
       "url": "https://www.deshaw.com/careers/5894",
       "first_seen": "2026-08-08",
       "fit": "medium",
-      "status": "ranked",
+      "status": "not_recommended",
       "portal": "tracker:speedyapply",
       "term_class": "PASS-summer27",
       "locations": [
@@ -1062,7 +1066,9 @@
       "posting_term": "12-week programme June to August 2027",
       "suggested_route": "apply",
       "route_reason": "a human reads this: email application or small-company form",
-      "apply_host": "email"
+      "apply_host": "email",
+      "not_recommended_reason": "duplicate of requisition 5894, kept at deshaw.com/careers/software-developer-intern-new-york-summer-2027-5894 which carries the term verdict. Dropped by the user 2026-08-11.",
+      "dedup_note": "same D. E. Shaw requisition 5894 as the descriptive-URL entry"
     },
     "https://apply.careers.microsoft.com/careers": {
       "title": "Software Engineer Intern, Fullstack Product (Web + Services)",
@@ -2412,7 +2418,7 @@
       "rank_score": 86,
       "rank_verdict": "Strong Fit",
       "rank_date": "2026-08-09",
-      "location": "FAIL",
+      "location": "PASS",
       "language_gate": "PASS",
       "language_note": null,
       "strengths": [
@@ -2428,7 +2434,12 @@
       "posting_term": "4-12 month internship starting this upcoming fall or winter term",
       "suggested_route": "apply",
       "route_reason": "small company, human-read application",
-      "apply_host": "unknown-linkedin"
+      "apply_host": "unknown-linkedin",
+      "location_note": "corrected 2026-08-11 by the user: stored location is Toronto, Ontario, Canada. CLAUDE.md excludes only India and China, so a Canadian posting cannot fail the Location Gate. Previous value: FAIL.",
+      "eval_score": 84,
+      "eval_verdict": "Strong Fit",
+      "eval_date": "2026-08-11",
+      "eval_file": "job_scraper/preprocess_2026-08-11.md"
     },
     "https://ca.linkedin.com/jobs/view/software-engineering-intern-applications-fall-spring-co-op-at-rivian-and-volkswagen-group-technologies-4424263570": {
       "title": "Software Engineering Intern - Applications (Fall-Spring Co-op)",
@@ -2480,7 +2491,7 @@
       "rank_score": 81,
       "rank_verdict": "Strong Fit",
       "rank_date": "2026-08-09",
-      "location": "FAIL",
+      "location": "PASS",
       "language_gate": "PASS",
       "language_note": null,
       "strengths": [
@@ -2496,7 +2507,12 @@
       "posting_term": "4-12 month internship starting this upcoming fall or winter term",
       "suggested_route": "apply",
       "route_reason": "small company, human-read application",
-      "apply_host": "unknown-linkedin"
+      "apply_host": "unknown-linkedin",
+      "location_note": "corrected 2026-08-11 by the user: stored location is Toronto, Ontario, Canada. CLAUDE.md excludes only India and China, so a Canadian posting cannot fail the Location Gate. Previous value: FAIL.",
+      "eval_score": 77,
+      "eval_verdict": "Good Fit",
+      "eval_date": "2026-08-11",
+      "eval_file": "job_scraper/preprocess_2026-08-11.md"
     },
     "https://www.linkedin.com/jobs/view/software-engineer-intern-at-pylon-4438841696": {
       "title": "Software Engineer, Intern",
@@ -4162,7 +4178,11 @@
       "suggested_route": "apply",
       "route_reason": "a human reads prose before a filter does",
       "apply_host": "email",
-      "cover_letter": "absent"
+      "cover_letter": "absent",
+      "eval_score": 79,
+      "eval_verdict": "Good Fit",
+      "eval_date": "2026-08-11",
+      "eval_file": "job_scraper/preprocess_2026-08-11.md"
     },
     "https://job-boards.greenhouse.io/aquaticcapitalmanagement/jobs/8489233002": {
       "title": "Software Engineer Intern",
