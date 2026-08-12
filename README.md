@@ -163,6 +163,8 @@ Four skills wrap those commands into a day's work, run locally and reporting eac
 
 Routes and outcomes are passed inline (`/process palantir=apply netic=skip`). An ambiguous company name is a hard error that writes nothing, never a best guess.
 
+Full walkthrough in [DAILY-LOOP.md](DAILY-LOOP.md).
+
 ## File structure
 
 ```
