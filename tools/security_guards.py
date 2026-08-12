@@ -49,10 +49,13 @@ REQUIRED_IGNORE_RULES = [
     # a repo-rooted rule silently fails to match it.
     #
     # FORK DIVERGENCE (2026-08-11): `**/job_scraper/seen_jobs.json` is deliberately
-    # absent from this list. A scheduled cloud agent clones this fork fresh on every
-    # run, so dedup state only survives if it is committed. The privacy cost was
-    # raised and accepted by the repo owner. Upstream forks should keep the rule.
+    # absent from this list. This fork commits it as the cross-machine backup of the
+    # scrape history. The privacy cost was raised and accepted by the repo owner.
+    # Upstream forks should keep the rule.
     "**/job_scraper/notion_sync.json",
+    # The /process checkpoint: employers, roles and packet paths. Not covered by the
+    # `*.md` rule, so it needs its own entry.
+    "**/job_scraper/process_state.json",
     "**/job_scraper/*.md",
     "*_BehavioralReport.pdf",
     "linkedin_Profile.pdf",

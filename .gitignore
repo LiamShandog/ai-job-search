@@ -24,11 +24,17 @@ salary_data.json
 # its own directory, so these land at .claude/skills/job-scraper/job_scraper/*.
 # A rooted `job_scraper/...` pattern silently fails to match them.
 #
-# seen_jobs.json is deliberately NOT ignored (decision 2026-08-11): the scheduled
-# cloud agent clones this repo fresh on every run, so dedup state only survives if
-# it is committed. The trade is that this public repo now carries the full scrape
+# seen_jobs.json is deliberately NOT ignored (decision 2026-08-11): it is the
+# cross-machine backup of the scrape history, and committing it is the only thing
+# that survives a lost laptop. The trade is that this public repo carries that
 # history - every posting seen, its score, and the `gaps` bullets.
+#
+# process_state.json is the /process checkpoint. It is NOT covered by the `*.md`
+# rule below and it names employers, roles and packet paths, so it needs its own
+# line. Losing it costs nothing: /process resumes from `outbox/` and `processed`
+# markers when the checkpoint is absent.
 **/job_scraper/notion_sync.json
+**/job_scraper/process_state.json
 **/job_scraper/*.md
 *_BehavioralReport.pdf
 linkedin_Profile.pdf
