@@ -30,7 +30,9 @@ Confirm the Gmail MCP tools (`mcp__claude_ai_Gmail__*`) are available. If not, t
 2. Read `gmail_sync/state.json` (create if missing: `{"last_sync": null, "processed_message_ids": []}`).
 3. Build the set of **open applications**: tracker rows whose `status` is not **Final** (per the **Tracker status vocabulary** in `/outcome`). For each, derive its archive folder `documents/applications/<company>_<role>/` (lowercase, underscores - same convention as `/outcome`) and check whether `outcome.md` exists there.
 
-   **`drafted` rows stay in this set, and are the reason it is worth searching.** `/apply` writes them but never submits; the user submits by hand and may not think to run `/outcome`. A reply arriving against a row still marked `drafted` is exactly that case, and the row holds the company name the search needs.
+   **`drafted` rows stay in this set.** No command produces them on this fork - `/apply` and `/tailor` stop at `processed` in `seen_jobs.json` and never write a tracker row - so a `drafted` row is one the user added by hand. Where one exists, a reply arriving against it is the case worth catching: the application was submitted by hand and `/outcome` was never run, and the row holds the company name the search needs.
+
+   **Known gap.** Documents prepared by `/apply` or `/tailor` live as `processed` entries in `seen_jobs.json` with no tracker row at all, and this step searches tracker rows only. A reply to an application submitted from an `outbox/` packet therefore has nothing here to match against until `/outcome` records it.
 4. If `$ARGUMENTS` named a company, filter this set to the matching row(s) (case-insensitive). No match → tell the user and stop, do not guess.
 
 ---
@@ -131,7 +133,7 @@ For every row the user approved:
    ```
    YYYY-MM-DD (via /gmail-sync): <one-line summary of what the email said>. Source: "<subject>" from <sender>, <email date>.
    ```
-3. If no archive folder/`outcome.md` exists yet for a matched application, create the folder and a minimal `outcome.md` following the exact format in `documents/README.md`, same as `/outcome` would. This is the normal case for a row that was still `drafted`: `/apply` Step 6b writes the tracker row and only `/outcome` Step 3 ever creates the archive, so the folder legitimately does not exist yet. It is also the case for a row added by hand.
+3. If no archive folder/`outcome.md` exists yet for a matched application, create the folder and a minimal `outcome.md` following the exact format in `documents/README.md`, same as `/outcome` would. Only `/outcome` Step 3 ever creates the archive, so for a row added by hand - including any still marked `drafted` - the folder legitimately does not exist yet.
 
 Rows the user skipped are left untouched - no tracker write, no `outcome.md` write - but their message IDs are still marked processed in Step 8, so the same email isn't re-proposed every run.
 

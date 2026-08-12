@@ -13,6 +13,48 @@ per-file diff commands.
 
 ## [Unreleased]
 
+### Added
+
+- **A four-skill daily loop: `/fetch` → `/preprocess` → `/process` → `/document`** - the commands
+  were all per-job and interactive, so a day's queue could not be run as a sequence. The blocker
+  was structural rather than cosmetic: `/apply` Step 1 ends in the only blocking gate in the
+  system ("Should I proceed with drafting the application for this role?"), so any wrapper
+  batching the queue would have to stop at every apply-routed job.
+
+  **The split is the fix.** `/preprocess` runs the evaluation behind that gate and then stops
+  without asking it; the user reads the evaluations in Slack and answers by re-routing; and the
+  effective `route` when `/process` runs *is* the answer. `/process` then works the whole queue
+  with zero interactive pauses. Routes are passed inline (`/process palantir=apply netic=skip`),
+  and an ambiguous company selector is a hard per-token error that writes nothing - `tiktok`
+  currently matches 23 queued postings, so a silent closest-match would cost 23 unwanted `/apply`
+  runs.
+
+  `/process` is serial, one job per sub-agent. That is a file-ownership consequence, not a
+  throughput choice: `outbox/START HERE.txt` is renumbered by every packet, the packet-naming
+  disambiguator reads live directory state, and `seen_jobs.json` is a whole-file rewrite. It
+  checkpoints to the gitignored `job_scraper/process_state.json` after every job, but resume is
+  filesystem-first (`processed` plus a matching `outbox/` folder) because `outbox_dir` is set on
+  only 2 of 25 existing processed entries while 11 packets exist on disk - so losing the
+  checkpoint costs nothing.
+
+  Ownership is unchanged throughout: `/rank` still writes only `suggested_route`, `/apply` and
+  `/tailor` still stop at `processed`, and `/outcome` remains the sole writer of
+  `job_search_tracker.csv` and the sole mover to `applied`. `/document` never infers a submission
+  from a packet existing, and - because it holds a Slack send tool - is barred outright from
+  `/outcome`'s follow-up branch, per that command's Rule 6. Pinned by
+  `tests/test_{fetch,preprocess,process,document}_skill.py` and
+  `tests/test_daily_loop_contract.py`.
+
+### Fixed
+
+- **`/outcome` and `/gmail-sync` referenced a `/apply` Step 6b that does not exist** - the
+  `drafted` tracker-row design was upstream's; this fork keeps the `processed`-in-`seen_jobs.json`
+  design, so nothing produces `drafted` rows and both files asserted a writer that was never
+  there. The references now say plainly that `drafted` is hand-set only. `/gmail-sync` also gains
+  a note naming the real consequence: documents prepared as `processed` have no tracker row, and
+  that step searches tracker rows only, so a reply to an application submitted from an `outbox/`
+  packet has nothing to match against until `/outcome` records it.
+
 ### Fixed
 
 - **Tracker status enum defined once; `offer declined`/`no response` now reach the correct

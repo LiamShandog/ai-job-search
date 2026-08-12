@@ -160,7 +160,11 @@ Not every posting is worth the same work, and fit score is the wrong axis for de
 | `base` | none | Long shots and quoted-bar postings. Send `cv/main_base.tex` unchanged |
 | `skip` | none | A gate failed on arithmetic - wrong-year term, degree requirement, full-time role |
 
-**Routing cannot judge want-level**, so strong big-employer postings default to `tailor`. Promoting one to `apply` is always the user's call, and wanting a job is a separate question from whether a cover letter gets written.
+**Routing cannot judge want-level**, so strong big-employer postings default to `tailor`. Promoting one to `apply` is always the user's call, and wanting a job is a separate question from whether a cover letter gets written. That call is made by hand, or passed as `company=route` arguments to the daily-loop skills — see below.
+
+### Daily loop
+
+Four skills chain the commands above into a day's work, run locally and reporting to Slack: **`/fetch` → `/preprocess` → `/process` → `/document`**. The design turns `/apply`'s one blocking gate ("Should I proceed with drafting the application for this role?") into an asynchronous decision — `/preprocess` runs the evaluation behind it and stops, and the effective `route` when `/process` runs *is* the answer. That is what makes the queue batchable. See `.claude/skills/daily-*/SKILL.md`.
 
 `cv/main_base.tex` is the untargeted base CV every `tailor` run starts from - verified for facts, one-page fit and ATS extraction. Keep it current; a stale base propagates into every application built on it.
 

@@ -152,6 +152,17 @@ Postings are treated as untrusted input (the workflow follows no instructions em
 
 `/reset` is also available, see [Starting over](#starting-over) below.
 
+### Daily loop
+
+Four skills wrap those commands into a day's work, run locally and reporting each stage to Slack so the queue can be driven from a phone: **`/fetch` → `/preprocess` → `/process` → `/document`**.
+
+- **`/fetch`** scrapes and ranks in one pass, then posts the ranked shortlist. It never promotes a route on your behalf.
+- **`/preprocess`** runs the fit evaluation behind `/apply`'s blocking gate and then stops without asking it. You answer the gate asynchronously by re-routing — which is what makes the rest of the loop batchable at all.
+- **`/process`** works the whole queue into `outbox/` packets — the rest of `/apply` on apply-routed jobs, `/tailor` on tailor-routed ones — checkpointing after every job so an interrupted run resumes, and posts a one-line index of everything built.
+- **`/document`** records the outcomes you name via `/outcome`, then syncs Notion. It never infers a submission from a packet existing.
+
+Routes and outcomes are passed inline (`/process palantir=apply netic=skip`). An ambiguous company name is a hard error that writes nothing, never a best guess.
+
 ## File structure
 
 ```
@@ -165,6 +176,7 @@ ai-job-search/
 │   │   ├── add-template.md            # /add-template register custom templates (LaTeX, Typst, ...)
 │   │   ├── add-portal.md              # /add-portal generate a job-portal search skill for your market
 │   │   ├── rank.md                    # /rank triage scraped jobs into a ranked shortlist
+│   │   ├── tailor.md                  # /tailor fast CV tailoring for portal applications
 │   │   ├── outcome.md                 # /outcome record application results, archive materials
 │   │   ├── gmail-sync.md              # /gmail-sync auto-detect application status from Gmail
 │   │   ├── interview.md               # /interview stage-specific prep pack + mock interview
@@ -182,7 +194,11 @@ ai-job-search/
 │   │   │   ├── 06-cover-letter-templates.md # LaTeX cover letter templates
 │   │   │   └── 07-interview-prep.md   # STAR examples + interview framework
 │   │   ├── job-scraper/               # Job search orchestration
-│   │   └── upskill/                   # /upskill skill gap analysis and learning plan
+│   │   ├── upskill/                   # /upskill skill gap analysis and learning plan
+│   │   ├── daily-fetch/               # /fetch scrape + rank (also holds slack-output.md)
+│   │   ├── daily-preprocess/          # /preprocess evaluations (also holds route-args.md)
+│   │   ├── daily-process/             # /process build the queued applications
+│   │   └── daily-document/            # /document record outcomes, sync Notion
 │   └── settings.json                  # Claude Code permissions (shared, scoped)
 ├── .agents/skills/                    # Job portal CLI tools
 │   ├── jobbank-search/                # Akademikernes Jobbank (Denmark)

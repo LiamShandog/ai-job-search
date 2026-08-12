@@ -47,7 +47,7 @@ Canonical spellings for the tracker CSV `status` column (underscores, never spac
 
 - **Final** (application closed): `hired`, `rejected`, `no_response`, `offer_declined`, `withdrawn`
 - **Open**: everything else, `drafted` included — a row is active until its status is one of the **Final** values.
-- **`drafted`** is open but distinct — nothing was sent, so no follow-up is ever due.
+- **`drafted`** is open but distinct — nothing was sent, so no follow-up is ever due. **No command writes it on this fork:** `/apply` and `/tailor` stop at `processed` in `seen_jobs.json`, which is the state meaning "documents built, not submitted", and neither touches the tracker. A `drafted` row is therefore one you added by hand. Readers must still handle it.
 - Readers must also accept the legacy space spellings `no response` and `offer declined` on read, so that existing trackers keep working without a migration. Never write them — they are the same values as `no_response` and `offer_declined`, not separate statuses, equally **Final**, and every rule that names one applies to the other.
 
 > Distinct from the archive `Status:` enum in `documents/README.md`

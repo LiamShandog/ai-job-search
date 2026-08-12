@@ -169,6 +169,19 @@ The `portal` field records which CLI skill produced the job (results are already
 
 `/apply` and `/tailor` extend it the same way when their documents pass verification: `processed_date` (ISO date), `processed_by` (`"apply"` or `"tailor"`), `cv_file`, `cover_letter_file` (omitted when no letter was written), and `outbox_dir` — the submission packet those two commands assemble, e.g. `"outbox/Palantir - Forward Deployed Engineer Intern"`. `cv_file` and `cover_letter_file` point at the **sources** in `cv/` and `cover_letters/`, which is where they are edited and compiled; `outbox_dir` points at the folder of renamed PDFs that actually gets uploaded. The folder name is shortened by hand and is not derivable from `title`, so it is stored rather than reconstructed. `/outcome` adds `applied_date` when it moves the entry to `applied`. These fields are additive and survive a re-rank - see `rank.md` Step 4, which forbids overwriting them.
 
+`/preprocess` extends it with four compact evaluation fields: `eval_score` (0-100 from `/apply`
+Step 1's overall fit score), `eval_verdict` (the recommendation band), `eval_date` (ISO), and
+`eval_file` (the path to the run's `job_scraper/preprocess_YYYY-MM-DD.md`). The evaluation **prose**
+never enters this file - it lives in that gitignored markdown file, because `seen_jobs.json` is
+committed on this fork. `/process` reads `eval_file` to recover Step 1's output instead of
+re-running it.
+
+**Writers of the `route` field.** `/rank` writes `suggested_route` and never `route`. The user's
+override is transcribed by `/preprocess`, `/process` and `/document`, and only ever from a literal
+`company=route` token the user typed - never inferred from a score, a reply, or a guess at intent.
+Every such write carries `route_set_by` in the form `"user YYYY-MM-DD"`. The grammar and the
+matching rules are defined once, in `.claude/skills/daily-preprocess/route-args.md`.
+
 A `skipped` or `not_recommended` entry keeps every one of those fields: the documents and the packet still exist on disk, and dropping a posting is a decision that is often revisited.
 
 2. Only present jobs NOT already in the seen list or tracker.
