@@ -25,9 +25,10 @@ per-file diff commands.
   without asking it; the user reads the evaluations in Slack and answers by re-routing; and the
   effective `route` when `/process` runs *is* the answer. `/process` then works the whole queue
   with zero interactive pauses. Routes are passed inline (`/process palantir=apply netic=skip`),
-  and an ambiguous company selector is a hard per-token error that writes nothing - `tiktok`
-  currently matches 23 queued postings, so a silent closest-match would cost 23 unwanted `/apply`
-  runs.
+  and an ambiguous company selector is a hard per-token error that writes nothing. Selectors match
+  on status alone, never on route, so `tiktok` currently resolves to 51 ranked postings (23 of
+  them in the apply/tailor queue) - a silent closest-match, or a silent match-all, would be
+  expensive in either direction.
 
   `/process` is serial, one job per sub-agent. That is a file-ownership consequence, not a
   throughput choice: `outbox/START HERE.txt` is renumbered by every packet, the packet-naming

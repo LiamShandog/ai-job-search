@@ -60,6 +60,14 @@ most.
 `base` and `skip` are **never** queued. `base` means send `cv/main_base.tex` unchanged and has no
 build step; `skip` failed a gate.
 
+**Skip an entry whose `company` is null or empty**, recording it as `skipped` with reason
+`no company`. The packet folder is `outbox/<Company> - <Role>`, so there is no valid name to give
+it — the run would create a folder beginning with a bare `" - "`, and `START HERE.txt` would index
+it. This is not hypothetical: aggregator portals occasionally store a repost whose stored URL is a
+chat or channel message rather than a posting on an ATS, and those arrive with no employer
+attached. Report them so they can be corrected or dropped, rather than silently building against
+them.
+
 ### Resume
 
 A job is already done — skip it — when **either**:

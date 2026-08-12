@@ -69,8 +69,20 @@ Identical in all three skills.
    disambiguation list (company, title, key), write nothing for it, and carry on with the other
    tokens. The user re-issues with `company:role-keyword`, the URL, or `company*`.
 
-Rule 6 is not caution for its own sake. Today `tiktok` matches 23 ranked apply/tailor entries,
-`microsoft` 5, and `optiver`, `bytedance` and `jane street` 3 each.
+Rule 6 is not caution for its own sake, and the numbers are larger than they look. Matching is
+restricted by **status only** (step 3), never by route — so a selector sees every ranked posting
+from that employer, not just the ones queued for work. Today:
+
+| Selector | Ranked entries matched | Of those, in the apply/tailor queue |
+|---|---|---|
+| `tiktok` | 51 | 23 |
+| `jane street` | 15 | 3 |
+| `microsoft` | 8 | 5 |
+| `drw` | 8 | 1 |
+
+So `tiktok*=apply` would route **51** postings, not the 23 a reader thinking in queue terms would
+expect. That gap is the reason the disambiguation list prints counts and the `*` qualifier has to
+be typed deliberately.
 
 ## Atomicity
 

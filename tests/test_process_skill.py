@@ -61,6 +61,13 @@ class ProcessSkillSpec(unittest.TestCase):
     def test_base_and_skip_are_never_queued(self):
         self.assertIn("`base` and `skip` are **never** queued", self.sections["Step 2: Build the queue"])
 
+    def test_entries_without_a_company_are_skipped_not_built(self):
+        """outbox/<Company> - <Role> has no valid name without a company; the
+        run would create a folder starting with a bare " - " and index it."""
+        queue = self.sections["Step 2: Build the queue"]
+        self.assertIn("Skip an entry whose `company` is null or empty", queue)
+        self.assertIn("no company", queue)
+
     def test_runs_serially_with_the_file_ownership_reasons_stated(self):
         """Parallelism would break three things at once; name all three."""
         work = self.sections["Step 3: Work the queue"]
