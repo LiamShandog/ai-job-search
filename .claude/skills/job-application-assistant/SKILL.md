@@ -39,7 +39,8 @@ When the user provides a job posting (URL or text), follow this workflow:
 
 ### Step 3b: Record the Application
 - Run this once both documents exist. A CV or cover letter drafted alone is not yet an application.
-- Follow **`/apply` Step 6b** (`.claude/commands/apply.md`) exactly: same header, same match-then-update rule, same `drafted` row, same prohibition on touching `job_scraper/seen_jobs.json`. It is stated there once so the two paths cannot drift. Two of its values are named in `/apply`'s own terms: `cv_file`/`cover_letter_file` are the paths written in Steps 2 and 3 here, and `source` is the posting URL from Step 1.
+- Follow **`/apply` Steps 5.5 and 5.6** (`.claude/commands/apply.md`) exactly: the `processed` marker on the `job_scraper/seen_jobs.json` entry with its `processed_date`, `processed_by`, `cv_file` and `cover_letter_file` companions, then the `outbox/` packet and the `outbox_dir` it records. Stated there once so the two paths cannot drift. `cv_file`/`cover_letter_file` are the paths written in Steps 2 and 3 here.
+- **`processed` is not `applied`.** This records that the documents exist and passed verification, not that anything was sent. Do not write `job_search_tracker.csv` — `/outcome` is its sole writer and the only command that moves an entry to `applied`.
 - This step exists here because `/scrape` Step 5 routes straight into this skill. Without it, that path writes two documents and records nothing.
 
 ### Step 4: Interview Preparation
